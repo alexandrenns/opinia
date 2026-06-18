@@ -1,0 +1,126 @@
+<div class="page-container">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="page-title">
+      <h2>Municípios</h2>
+      <p>Gerencie os municípios cadastrados na plataforma</p>
+    </div>
+    <div class="page-actions">
+      <button mat-raised-button color="primary" (click)="openDialog()">
+        <mat-icon>add</mat-icon> Novo Município
+      </button>
+    </div>
+  </div>
+
+  <!-- Search bar -->
+  <div class="card search-bar fade-in">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Buscar município ou estado</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput [(ngModel)]="search" (ngModelChange)="applyFilter()" placeholder="Ex: São Paulo, SP…" />
+      <button *ngIf="search" mat-icon-button matSuffix (click)="search=''; applyFilter()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+    <span class="result-count">{{ filtered.length }} municípios</span>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-overlay-inline">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <!-- Table -->
+  <div *ngIf="!loading" class="card table-card fade-in-delay-1">
+    <div *ngIf="filtered.length === 0" class="empty-state">
+      <mat-icon>location_city</mat-icon>
+      <h3>Nenhum município encontrado</h3>
+      <p>Cadastre o primeiro município clicando em "Novo Município"</p>
+      <button mat-raised-button color="primary" (click)="openDialog()">
+        <mat-icon>add</mat-icon> Novo Município
+      </button>
+    </div>
+
+    <div *ngIf="filtered.length > 0" class="data-table-container">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:60px">Brasão</th>
+            <th>Município</th>
+            <th>Estado</th>
+            <th>População</th>
+            <th>Bairros</th>
+            <th>Status</th>
+            <th style="width:100px">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let m of filtered">
+
+            <!-- Brasão -->
+            <td>
+              <div class="brasao-cell">
+                <img *ngIf="m.brasao" [src]="getImageUrl(m.brasao)" alt="Brasão" class="brasao-img" />
+                <div *ngIf="!m.brasao" class="brasao-placeholder">
+                  <mat-icon>location_city</mat-icon>
+                </div>
+              </div>
+            </td>
+
+            <!-- Nome -->
+            <td>
+              <div class="municipio-name">
+                <strong>{{ m.nome }}</strong>
+              </div>
+            </td>
+
+            <!-- Estado -->
+            <td>
+              <span class="badge badge-info">{{ m.estado }}</span>
+            </td>
+
+            <!-- Populacao -->
+            <td>{{ m.populacao ? (m.populacao | number) : '—' }}</td>
+
+            <!-- Bairros -->
+            <td>
+              <span class="badge badge-default">{{ m.bairros?.length || 0 }} bairros</span>
+            </td>
+
+            <!-- Status -->
+            <td>
+              <span class="badge" [class.badge-success]="m.ativo" [class.badge-error]="!m.ativo">
+                {{ m.ativo ? 'Ativo' : 'Inativo' }}
+              </span>
+            </td>
+
+            <!-- Ações -->
+            <td>
+              <div class="action-btns">
+                <button mat-icon-button color="primary" (click)="openDialog(m)" matTooltip="Editar">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="Mais opções">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <button mat-menu-item (click)="toggleStatus(m)">
+                    <mat-icon>{{ m.ativo ? 'toggle_off' : 'toggle_on' }}</mat-icon>
+                    <span>{{ m.ativo ? 'Inativar' : 'Ativar' }}</span>
+                  </button>
+                  <mat-divider></mat-divider>
+                  <button mat-menu-item (click)="delete(m)" class="danger-menu-item">
+                    <mat-icon color="warn">delete</mat-icon>
+                    <span style="color:#DC3545">Excluir</span>
+                  </button>
+                </mat-menu>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>

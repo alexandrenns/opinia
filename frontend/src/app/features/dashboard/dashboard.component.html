@@ -1,0 +1,165 @@
+<div class="page-container">
+
+  <!-- Page header -->
+  <div class="page-header">
+    <div class="page-title">
+      <h2>Dashboard</h2>
+      <p>Visão geral da plataforma</p>
+    </div>
+    <div class="page-actions">
+      <button mat-stroked-button color="primary" routerLink="/pesquisas">
+        <mat-icon>add</mat-icon> Nova Pesquisa
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-cards">
+    <div class="skeleton-card" *ngFor="let i of [1,2,3,4,5,6]"></div>
+  </div>
+
+  <!-- Indicadores -->
+  <div *ngIf="!loading" class="stats-grid fade-in">
+    <div class="stat-card">
+      <div class="stat-icon" style="background: linear-gradient(135deg,#0F4C81,#1F6FB2)">
+        <mat-icon>location_city</mat-icon>
+      </div>
+      <div class="stat-info">
+        <div class="stat-value">{{ indicadores.municipios || 0 }}</div>
+        <div class="stat-label">Municípios Ativos</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon" style="background: linear-gradient(135deg,#2E8BC0,#1F6FB2)">
+        <mat-icon>business_center</mat-icon>
+      </div>
+      <div class="stat-info">
+        <div class="stat-value">{{ indicadores.contratantes || 0 }}</div>
+        <div class="stat-label">Contratantes</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon" style="background: linear-gradient(135deg,#198754,#20a060)">
+        <mat-icon>poll</mat-icon>
+      </div>
+      <div class="stat-info">
+        <div class="stat-value">{{ indicadores.pesquisasAtivas || 0 }}</div>
+        <div class="stat-label">Pesquisas Ativas</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon" style="background: linear-gradient(135deg,#6f42c1,#8B5CF6)">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+      <div class="stat-info">
+        <div class="stat-value">{{ indicadores.pesquisasFinalizadas || 0 }}</div>
+        <div class="stat-label">Pesquisas Finalizadas</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon" style="background: linear-gradient(135deg,#FFC107,#FF9800)">
+        <mat-icon>qr_code</mat-icon>
+      </div>
+      <div class="stat-info">
+        <div class="stat-value">{{ indicadores.tokensGerados || 0 }}</div>
+        <div class="stat-label">Tokens Gerados</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon" style="background: linear-gradient(135deg,#DC3545,#E55)">
+        <mat-icon>how_to_vote</mat-icon>
+      </div>
+      <div class="stat-info">
+        <div class="stat-value">{{ indicadores.tokensRespondidos || 0 }}</div>
+        <div class="stat-label">Respostas Coletadas</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts row -->
+  <div *ngIf="!loading" class="charts-row fade-in-delay-1">
+
+    <!-- Bar chart -->
+    <div class="card chart-card">
+      <div class="card-header">
+        <mat-icon>bar_chart</mat-icon>
+        <h3>Pesquisas por Município</h3>
+      </div>
+      <div class="chart-container" *ngIf="barData.labels?.length; else emptyChart">
+        <canvas baseChart [data]="barData" [options]="barOptions" type="bar"></canvas>
+      </div>
+      <ng-template #emptyChart>
+        <div class="empty-state small">
+          <mat-icon>bar_chart</mat-icon>
+          <p>Nenhum dado disponível ainda</p>
+        </div>
+      </ng-template>
+    </div>
+
+    <!-- Line chart -->
+    <div class="card chart-card">
+      <div class="card-header">
+        <mat-icon>show_chart</mat-icon>
+        <h3>Evolução de Respostas (30 dias)</h3>
+      </div>
+      <div class="chart-container" *ngIf="lineData.labels?.length; else emptyLine">
+        <canvas baseChart [data]="lineData" [options]="lineOptions" type="line"></canvas>
+      </div>
+      <ng-template #emptyLine>
+        <div class="empty-state small">
+          <mat-icon>show_chart</mat-icon>
+          <p>Sem respostas nos últimos 30 dias</p>
+        </div>
+      </ng-template>
+    </div>
+
+  </div>
+
+  <!-- Participation table -->
+  <div *ngIf="!loading && participacao.length" class="card fade-in-delay-2">
+    <div class="card-header">
+      <mat-icon>leaderboard</mat-icon>
+      <h3>Participação por Pesquisa</h3>
+    </div>
+    <div class="data-table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Pesquisa</th>
+            <th>Município</th>
+            <th>Convites</th>
+            <th>Respostas</th>
+            <th>Taxa</th>
+            <th>Progresso</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of participacao">
+            <td><strong>{{ p.pesquisa }}</strong></td>
+            <td>{{ p.municipio }}</td>
+            <td>{{ p.tokens }}</td>
+            <td>{{ p.respostas }}</td>
+            <td>
+              <span class="badge"
+                [class.badge-success]="p.taxa >= 60"
+                [class.badge-warning]="p.taxa >= 30 && p.taxa < 60"
+                [class.badge-error]="p.taxa < 30">
+                {{ p.taxa }}%
+              </span>
+            </td>
+            <td class="progress-cell">
+              <mat-progress-bar mode="determinate" [value]="p.taxa"
+                [color]="p.taxa >= 60 ? 'primary' : 'warn'"></mat-progress-bar>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>

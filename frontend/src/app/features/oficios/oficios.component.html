@@ -1,0 +1,56 @@
+<div class="page-container">
+  <div class="page-header">
+    <div class="page-title">
+      <h2>Modelos de Ofício</h2>
+      <p>Crie modelos reutilizáveis para geração dos ofícios com QR Code</p>
+    </div>
+    <div class="page-actions">
+      <button mat-raised-button color="primary" (click)="openDialog()">
+        <mat-icon>add</mat-icon> Novo Modelo
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading-center"><mat-spinner diameter="40"></mat-spinner></div>
+
+  <div *ngIf="!loading && modelos.length === 0" class="card">
+    <div class="empty-state">
+      <mat-icon>description</mat-icon>
+      <h3>Nenhum modelo criado</h3>
+      <p>Crie modelos reutilizáveis para os ofícios impressos</p>
+      <button mat-raised-button color="primary" (click)="openDialog()"><mat-icon>add</mat-icon> Novo Modelo</button>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && modelos.length > 0" class="modelos-grid fade-in">
+    <div *ngFor="let m of modelos" class="modelo-card">
+      <div class="modelo-header">
+        <div class="modelo-icon"><mat-icon>description</mat-icon></div>
+        <div class="modelo-info">
+          <h4>{{ m.nome }}</h4>
+          <span class="badge" [class.badge-success]="m.ativo" [class.badge-error]="!m.ativo">
+            {{ m.ativo ? 'Ativo' : 'Inativo' }}
+          </span>
+        </div>
+        <div class="modelo-actions">
+          <button mat-icon-button color="primary" (click)="openDialog(m)" matTooltip="Editar"><mat-icon>edit</mat-icon></button>
+          <button mat-icon-button [matMenuTriggerFor]="mMenu"><mat-icon>more_vert</mat-icon></button>
+          <mat-menu #mMenu="matMenu">
+            <button mat-menu-item (click)="toggleStatus(m)"><mat-icon>{{ m.ativo ? 'toggle_off':'toggle_on' }}</mat-icon> {{ m.ativo ? 'Inativar':'Ativar' }}</button>
+            <button mat-menu-item (click)="delete(m)"><mat-icon color="warn">delete</mat-icon><span style="color:#DC3545">Excluir</span></button>
+          </mat-menu>
+        </div>
+      </div>
+      <div class="modelo-body">
+        <div class="modelo-field" *ngIf="m.cabecalho">
+          <span class="field-lbl">Cabeçalho</span>
+          <p>{{ m.cabecalho | slice:0:80 }}{{ m.cabecalho.length > 80 ? '…' : '' }}</p>
+        </div>
+        <div class="modelo-field" *ngIf="m.textoInstitucional">
+          <span class="field-lbl">Texto institucional</span>
+          <p>{{ m.textoInstitucional | slice:0:100 }}{{ m.textoInstitucional.length > 100 ? '…' : '' }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

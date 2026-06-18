@@ -1,0 +1,104 @@
+<mat-sidenav-container class="shell-container">
+  <!-- ── Sidebar ─────────────────────────────────────────────── -->
+  <mat-sidenav
+    #sidenav
+    mode="side"
+    [opened]="sidenavOpened"
+    class="sidenav"
+    fixedInViewport
+  >
+    <!-- Brand -->
+    <div class="brand">
+      <div class="brand-icon">
+        <mat-icon>analytics</mat-icon>
+      </div>
+      <div class="brand-text" *ngIf="sidenavOpened">
+        <span class="brand-name">Opinia</span>
+        <span class="brand-sub">Painel Administrativo</span>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <!-- Nav items -->
+    <nav class="nav-list">
+      <a
+        *ngFor="let item of navItems"
+        [routerLink]="item.route"
+        class="nav-item"
+        [class.active]="isActive(item.route)"
+        [matTooltip]="!sidenavOpened ? item.label : ''"
+        matTooltipPosition="right"
+      >
+        <mat-icon>{{ item.icon }}</mat-icon>
+        <span class="nav-label" *ngIf="sidenavOpened">{{ item.label }}</span>
+        <span class="nav-badge" *ngIf="item.badge && sidenavOpened">{{
+          item.badge
+        }}</span>
+      </a>
+    </nav>
+
+    <!-- Bottom user area -->
+    <div class="sidenav-footer" *ngIf="sidenavOpened">
+      <div class="user-info">
+        <div class="user-avatar">
+          {{ user?.email?.charAt(0)?.toUpperCase() }}
+        </div>
+        <div class="user-details">
+          <span class="user-email">{{ user?.email }}</span>
+          <span class="user-role">Administrador</span>
+        </div>
+      </div>
+      <button
+        mat-icon-button
+        (click)="logout()"
+        matTooltip="Sair"
+        class="logout-btn"
+      >
+        <mat-icon>logout</mat-icon>
+      </button>
+    </div>
+  </mat-sidenav>
+
+  <!-- ── Main content ────────────────────────────────────────── -->
+  <mat-sidenav-content class="main-content">
+    <!-- Topbar -->
+    <header class="topbar">
+      <button mat-icon-button (click)="toggleSidenav()" class="toggle-btn">
+        <mat-icon>{{ sidenavOpened ? "menu_open" : "menu" }}</mat-icon>
+      </button>
+
+      <div class="topbar-spacer"></div>
+
+      <div class="topbar-actions">
+        <button mat-icon-button [matMenuTriggerFor]="userMenu" class="user-btn">
+          <div class="topbar-avatar">
+            {{ user?.email?.charAt(0)?.toUpperCase() }}
+          </div>
+        </button>
+        <mat-menu #userMenu="matMenu" xPosition="before">
+          <div class="menu-user-header">
+            <p class="menu-email">{{ user?.email }}</p>
+            <p class="menu-role">Administrador</p>
+          </div>
+          <mat-divider></mat-divider>
+          <button mat-menu-item (click)="openChangePassword()">
+            <mat-icon>lock_reset</mat-icon><span>Alterar Senha</span>
+          </button>
+          <button mat-menu-item routerLink="/configuracao">
+            <mat-icon>settings</mat-icon><span>Configurações</span>
+          </button>
+          <mat-divider></mat-divider>
+          <button mat-menu-item (click)="logout()">
+            <mat-icon>logout</mat-icon><span>Sair</span>
+          </button>
+        </mat-menu>
+      </div>
+    </header>
+
+    <!-- Router outlet -->
+    <div class="content-area">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

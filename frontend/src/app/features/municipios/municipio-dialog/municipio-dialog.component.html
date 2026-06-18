@@ -1,0 +1,67 @@
+<div class="dialog-header">
+  <mat-icon>location_city</mat-icon>
+  <h3>{{ isEdit ? 'Editar Município' : 'Novo Município' }}</h3>
+  <span class="spacer"></span>
+  <button mat-icon-button (click)="dialogRef.close()"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="dialog-form">
+
+    <!-- Brasão upload -->
+    <div class="brasao-upload">
+      <div class="brasao-preview" (click)="fileInput.click()">
+        <img *ngIf="previewUrl" [src]="previewUrl" alt="Brasão" />
+        <div *ngIf="!previewUrl" class="brasao-placeholder">
+          <mat-icon>add_photo_alternate</mat-icon>
+          <span>Clique para adicionar brasão</span>
+        </div>
+        <div class="brasao-overlay">
+          <mat-icon>photo_camera</mat-icon>
+        </div>
+      </div>
+      <button *ngIf="previewUrl" mat-stroked-button type="button" (click)="removeImage()" class="remove-img-btn">
+        <mat-icon>delete</mat-icon> Remover
+      </button>
+      <input #fileInput type="file" accept="image/*" hidden (change)="onFileSelected($event)" />
+    </div>
+
+    <div class="form-grid">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nome do Município</mat-label>
+        <input matInput formControlName="nome" placeholder="Ex: São Paulo" />
+        <mat-error>Nome obrigatório</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Estado (UF)</mat-label>
+        <mat-select formControlName="estado">
+          <mat-option *ngFor="let e of estados" [value]="e">{{ e }}</mat-option>
+        </mat-select>
+        <mat-error>Estado obrigatório</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>População (opcional)</mat-label>
+        <input matInput type="number" formControlName="populacao" placeholder="Ex: 200000" />
+        <mat-icon matSuffix>people</mat-icon>
+      </mat-form-field>
+
+      <div class="toggle-field">
+        <mat-slide-toggle formControlName="ativo" color="primary">
+          <span>{{ form.get('ativo')?.value ? 'Município ativo' : 'Município inativo' }}</span>
+        </mat-slide-toggle>
+      </div>
+    </div>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button (click)="dialogRef.close()" [disabled]="loading">Cancelar</button>
+  <button mat-raised-button color="primary" (click)="submit()" [disabled]="loading">
+    <mat-spinner *ngIf="loading" diameter="18"></mat-spinner>
+    <mat-icon *ngIf="!loading">save</mat-icon>
+    {{ loading ? 'Salvando...' : (isEdit ? 'Atualizar' : 'Criar Município') }}
+  </button>
+</mat-dialog-actions>

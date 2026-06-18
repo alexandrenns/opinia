@@ -1,0 +1,128 @@
+<div class="page-container">
+  <div class="page-header">
+    <div class="page-title">
+      <h2>Contratantes</h2>
+      <p>Gerencie os contratantes das pesquisas</p>
+    </div>
+    <div class="page-actions">
+      <button mat-raised-button color="primary" (click)="openDialog()">
+        <mat-icon>add</mat-icon> Novo Contratante
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats chips -->
+  <div class="tipo-chips fade-in" *ngIf="statsByTipo.length">
+    <button
+      *ngFor="let s of statsByTipo"
+      mat-stroked-button
+      class="tipo-chip"
+      [class.active]="filterTipo === s.tipo"
+      (click)="filterTipo = filterTipo === s.tipo ? '' : s.tipo; applyFilter()"
+    >
+      {{ s.tipo }} <span class="chip-count">{{ s.count }}</span>
+    </button>
+    <button
+      mat-stroked-button
+      class="tipo-chip"
+      [class.active]="!filterTipo"
+      (click)="filterTipo = ''; applyFilter()"
+    >
+      Todos <span class="chip-count">{{ contratantes.length }}</span>
+    </button>
+  </div>
+
+  <!-- Search -->
+  <div class="card filters-bar fade-in">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Buscar por nome ou telefone</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput [(ngModel)]="search" (ngModelChange)="applyFilter()" />
+      <button
+        *ngIf="search"
+        mat-icon-button
+        matSuffix
+        (click)="search = ''; applyFilter()"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+    <span class="result-count">{{ filtered.length }} contratante(s)</span>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-center">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <!-- Empty -->
+  <div *ngIf="!loading && filtered.length === 0" class="card">
+    <div class="empty-state">
+      <mat-icon>business_center</mat-icon>
+      <h3>Nenhum contratante encontrado</h3>
+      <p>Cadastre contratantes para vincular às pesquisas</p>
+      <button mat-raised-button color="primary" (click)="openDialog()">
+        <mat-icon>add</mat-icon> Novo Contratante
+      </button>
+    </div>
+  </div>
+
+  <!-- Grid -->
+  <div
+    *ngIf="!loading && filtered.length > 0"
+    class="contratantes-grid fade-in-delay-1"
+  >
+    <div *ngFor="let c of filtered" class="contratante-card">
+      <div class="card-top">
+        <div class="avatar" [ngClass]="getAvatarClass(c.tipo)">
+          {{ c.nome.charAt(0).toUpperCase() }}
+        </div>
+        <div class="card-actions">
+          <button
+            mat-icon-button
+            color="primary"
+            (click)="openDialog(c)"
+            matTooltip="Editar"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button [matMenuTriggerFor]="cMenu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #cMenu="matMenu">
+            <button mat-menu-item (click)="toggleStatus(c)">
+              <mat-icon>{{ c.ativo ? "toggle_off" : "toggle_on" }}</mat-icon>
+              {{ c.ativo ? "Inativar" : "Ativar" }}
+            </button>
+            <button mat-menu-item (click)="delete(c)">
+              <mat-icon color="warn">delete</mat-icon>
+              <span style="color: #dc3545">Excluir</span>
+            </button>
+          </mat-menu>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <h4 class="contratante-nome">{{ c.nome }}</h4>
+        <div class="contratante-meta">
+          <span
+            class="badge"
+            [ngClass]="tipoColors[c.tipo] || 'badge-default'"
+            >{{ c.tipo }}</span
+          >
+          <span
+            class="badge"
+            [class.badge-success]="c.ativo"
+            [class.badge-error]="!c.ativo"
+          >
+            {{ c.ativo ? "Ativo" : "Inativo" }}
+          </span>
+        </div>
+        <div *ngIf="c.telefone" class="contratante-tel">
+          <mat-icon>phone</mat-icon>{{ c.telefone }}
+        </div>
+        <p *ngIf="c.observacoes" class="contratante-obs">{{ c.observacoes }}</p>
+      </div>
+    </div>
+  </div>
+</div>

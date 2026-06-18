@@ -1,0 +1,123 @@
+.login-page {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+
+  @media (max-width: 900px) { grid-template-columns: 1fr; }
+}
+
+// ── Brand panel ───────────────────────────────────────────────────────────────
+.login-brand {
+  background: linear-gradient(145deg, var(--primary) 0%, #1A5D9A 50%, var(--accent) 100%);
+  padding: 48px 52px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 280px; height: 280px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.05);
+  }
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: -40px;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.04);
+  }
+
+  .brand-content { position: relative; z-index: 1; }
+
+  .brand-logo {
+    width: 72px; height: 72px;
+    background: rgba(255,255,255,.15);
+    border-radius: 20px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 28px;
+    border: 1px solid rgba(255,255,255,.2);
+    mat-icon { font-size: 36px; width: 36px; height: 36px; color: #fff; }
+  }
+
+  h1 { font-size: 42px; font-weight: 800; color: #fff; letter-spacing: -1px; margin-bottom: 12px; }
+
+  .brand-tagline {
+    font-size: 16px;
+    color: rgba(255,255,255,.75);
+    line-height: 1.6;
+    margin-bottom: 48px;
+  }
+
+  .brand-features {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: rgba(255,255,255,.8);
+      font-size: 14px;
+      mat-icon { color: rgba(255,255,255,.6); font-size: 20px; width: 20px; height: 20px; }
+    }
+  }
+
+  .brand-copyright { color: rgba(255,255,255,.35); font-size: 12px; position: relative; z-index: 1; }
+
+  @media (max-width: 900px) { display: none; }
+}
+
+// ── Form panel ────────────────────────────────────────────────────────────────
+.login-form-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  background: var(--bg);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--card);
+  border-radius: 16px;
+  padding: 40px 36px;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+}
+
+.login-header {
+  margin-bottom: 32px;
+  h2 { font-size: 22px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+  p  { font-size: 13px; color: var(--text-muted); }
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  mat-form-field { width: 100%; }
+}
+
+.login-btn {
+  width: 100%;
+  height: 48px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: .3px;
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  mat-spinner { ::ng-deep circle { stroke: rgba(255,255,255,.8); } }
+}

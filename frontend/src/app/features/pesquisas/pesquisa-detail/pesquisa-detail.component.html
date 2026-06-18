@@ -1,0 +1,161 @@
+<div class="page-container" *ngIf="!loading && pesquisa">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="page-title">
+      <div class="title-row">
+        <button mat-icon-button routerLink="/pesquisas"><mat-icon>arrow_back</mat-icon></button>
+        <div>
+          <h2>{{ pesquisa.nome }}</h2>
+          <div class="subtitle-badges">
+            <span class="badge" [ngClass]="statusColors[pesquisa.status]">{{ pesquisa.status }}</span>
+            <span class="badge badge-default">{{ pesquisa.tipo }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="page-actions">
+      <button mat-stroked-button [routerLink]="['/pesquisas', pesquisaId, 'editar']">
+        <mat-icon>edit</mat-icon> Editar
+      </button>
+      <button mat-raised-button color="primary" (click)="downloadRelatorio()" [disabled]="downloadingPdf">
+        <mat-spinner *ngIf="downloadingPdf" diameter="18"></mat-spinner>
+        <mat-icon *ngIf="!downloadingPdf">picture_as_pdf</mat-icon>
+        {{ downloadingPdf ? 'Gerando...' : 'Gerar Relatório' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Info cards -->
+  <div class="info-row fade-in">
+    <div class="info-item">
+      <mat-icon>location_city</mat-icon>
+      <div>
+        <span class="info-label">Município</span>
+        <span class="info-value">{{ pesquisa.municipio?.nome }}, {{ pesquisa.municipio?.estado }}</span>
+      </div>
+    </div>
+    <div class="info-item">
+      <mat-icon>business_center</mat-icon>
+      <div>
+        <span class="info-label">Contratante</span>
+        <span class="info-value">{{ pesquisa.contratante?.nome }}</span>
+      </div>
+    </div>
+    <div class="info-item" *ngIf="pesquisa.dataInicial">
+      <mat-icon>date_range</mat-icon>
+      <div>
+        <span class="info-label">Período</span>
+        <span class="info-value">
+          {{ pesquisa.dataInicial | date:'dd/MM/yyyy' }} a {{ pesquisa.dataFinal | date:'dd/MM/yyyy' }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row fade-in-delay-1">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:linear-gradient(135deg,#1F6FB2,#2E8BC0)">
+        <mat-icon>qr_code</mat-icon>
+      </div>
+      <div class="stat-info">
+        <div class="stat-value">{{ stats.total || 0 }}</div>
+        <div class="stat-label">Tokens Gerados</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:linear-gradient(135deg,#198754,#22A06B)">
+        <mat-icon>how_to_vote</mat-icon>
+      </div>
+      <div class="stat-info">
+        <div class="stat-value">{{ stats.usados || 0 }}</div>
+        <div class="stat-label">Respostas Coletadas</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:linear-gradient(135deg,#FFC107,#FF9800)">
+        <mat-icon>pending</mat-icon>
+      </div>
+      <div class="stat-info">
+        <div class="stat-value">{{ stats.pendentes || 0 }}</div>
+        <div class="stat-label">Tokens Pendentes</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:linear-gradient(135deg,#6f42c1,#8B5CF6)">
+        <mat-icon>percent</mat-icon>
+      </div>
+      <div class="stat-info">
+        <div class="stat-value">{{ taxaParticipacao }}%</div>
+        <div class="stat-label">Taxa de Participação</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress bar -->
+  <div class="card progress-card fade-in-delay-1" *ngIf="stats.total > 0">
+    <div class="progress-header">
+      <span>Progresso da coleta</span>
+      <span class="progress-pct">{{ stats.usados }}/{{ stats.total }} respostas</span>
+    </div>
+    <mat-progress-bar mode="determinate" [value]="taxaParticipacao" color="primary"></mat-progress-bar>
+  </div>
+
+  <!-- Action panels -->
+  <div class="action-panels fade-in-delay-2">
+
+    <div class="action-panel" [routerLink]="['/pesquisas', pesquisaId, 'perguntas']">
+      <div class="panel-icon" style="background:#EBF5FB">
+        <mat-icon style="color:#1F6FB2">quiz</mat-icon>
+      </div>
+      <div class="panel-content">
+        <h4>Construtor de Perguntas</h4>
+        <p>Adicione, reordene e gerencie as perguntas do questionário</p>
+        <span class="panel-badge">{{ pesquisa.perguntas?.length || 0 }} perguntas</span>
+      </div>
+      <mat-icon class="panel-arrow">chevron_right</mat-icon>
+    </div>
+
+    <div class="action-panel" [routerLink]="['/pesquisas', pesquisaId, 'distribuicao']">
+      <div class="panel-icon" style="background:#E8F5E9">
+        <mat-icon style="color:#198754">share</mat-icon>
+      </div>
+      <div class="panel-content">
+        <h4>Distribuição e Tokens</h4>
+        <p>Defina bairros, gere tokens e QR Codes para distribuição</p>
+        <span class="panel-badge">{{ stats.total || 0 }} tokens</span>
+      </div>
+      <mat-icon class="panel-arrow">chevron_right</mat-icon>
+    </div>
+
+    <div class="action-panel" (click)="downloadControle()">
+      <div class="panel-icon" style="background:#FFF3E0">
+        <mat-icon style="color:#FF9800">list_alt</mat-icon>
+      </div>
+      <div class="panel-content">
+        <h4>PDF de Controle</h4>
+        <p>Baixe a lista completa de tokens com status de uso</p>
+        <span class="panel-badge">Auditoria</span>
+      </div>
+      <mat-icon class="panel-arrow">download</mat-icon>
+    </div>
+
+    <div class="action-panel" (click)="downloadRelatorio()" [class.disabled]="downloadingPdf">
+      <div class="panel-icon" style="background:#FCE4EC">
+        <mat-icon style="color:#DC3545">picture_as_pdf</mat-icon>
+      </div>
+      <div class="panel-content">
+        <h4>Relatório Completo</h4>
+        <p>Gere o relatório final em PDF com análises, gráficos e índice municipal</p>
+        <span class="panel-badge">9 seções</span>
+      </div>
+      <mat-spinner *ngIf="downloadingPdf" diameter="20"></mat-spinner>
+      <mat-icon *ngIf="!downloadingPdf" class="panel-arrow">download</mat-icon>
+    </div>
+
+  </div>
+
+</div>
+
+<div *ngIf="loading" class="loading-center"><mat-spinner diameter="40"></mat-spinner></div>

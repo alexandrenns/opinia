@@ -1,0 +1,94 @@
+<div class="page-container">
+  <div class="page-header">
+    <div class="page-title">
+      <div class="title-row">
+        <button mat-icon-button [routerLink]="['/pesquisas', pesquisaId]"><mat-icon>arrow_back</mat-icon></button>
+        <div>
+          <h2>Construtor de Perguntas</h2>
+          <p>{{ pesquisa?.nome }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="page-actions">
+      <button mat-raised-button color="primary" (click)="openDialog()">
+        <mat-icon>add</mat-icon> Nova Pergunta
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading-center"><mat-spinner diameter="40"></mat-spinner></div>
+
+  <!-- Empty -->
+  <div *ngIf="!loading && perguntas.length === 0" class="card">
+    <div class="empty-state">
+      <mat-icon>quiz</mat-icon>
+      <h3>Nenhuma pergunta criada</h3>
+      <p>Adicione perguntas ao questionário. Elas serão exibidas na ordem definida.</p>
+      <button mat-raised-button color="primary" (click)="openDialog()">
+        <mat-icon>add</mat-icon> Criar Primeira Pergunta
+      </button>
+    </div>
+  </div>
+
+  <!-- Drag-drop list -->
+  <div *ngIf="!loading && perguntas.length > 0">
+    <div class="list-info fade-in">
+      <mat-icon>drag_indicator</mat-icon>
+      <span>Arraste as perguntas para reordenar. Ordem atual: {{ perguntas.length }} pergunta(s).</span>
+    </div>
+
+    <div cdkDropList (cdkDropListDropped)="drop($event)" class="perguntas-drop-list">
+      <div *ngFor="let p of perguntas; let i = index"
+        cdkDrag class="pergunta-item fade-in">
+
+        <!-- Drag handle -->
+        <div cdkDragHandle class="drag-handle">
+          <mat-icon>drag_indicator</mat-icon>
+        </div>
+
+        <!-- Order number -->
+        <div class="pergunta-num">{{ i + 1 }}</div>
+
+        <!-- Type icon -->
+        <div class="tipo-icon">
+          <mat-icon>{{ tipoIcons[p.tipo] }}</mat-icon>
+        </div>
+
+        <!-- Content -->
+        <div class="pergunta-content">
+          <div class="pergunta-header-row">
+            <span class="tipo-badge">{{ tipoLabels[p.tipo] }}</span>
+            <span *ngIf="p.tipo === 'condicional'" class="cond-badge">
+              <mat-icon>account_tree</mat-icon> Condicional
+            </span>
+          </div>
+          <p class="pergunta-texto">{{ p.texto }}</p>
+          <div class="alternativas-preview" *ngIf="p.alternativas?.length">
+            <span *ngFor="let a of p.alternativas.slice(0,4)" class="alt-chip">{{ a.texto }}</span>
+            <span *ngIf="p.alternativas.length > 4" class="alt-more">+{{ p.alternativas.length - 4 }}</span>
+          </div>
+          <div *ngIf="p.tipo === 'escala'" class="escala-preview">
+            Escala de {{ p.escalaMin || 1 }} a {{ p.escalaMax || 10 }}
+            <span *ngIf="p.escalaLabelMin"> — {{ p.escalaLabelMin }} → {{ p.escalaLabelMax }}</span>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="pergunta-actions">
+          <button mat-icon-button color="primary" (click)="openDialog(p)" matTooltip="Editar">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button (click)="duplicate(p)" matTooltip="Duplicar">
+            <mat-icon>content_copy</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="delete(p)" matTooltip="Excluir">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+
+        <!-- Drag placeholder -->
+        <div *cdkDragPlaceholder class="drag-placeholder"></div>
+      </div>
+    </div>
+  </div>
+</div>

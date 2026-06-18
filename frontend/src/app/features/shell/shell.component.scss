@@ -1,0 +1,159 @@
+$sidenav-width: 240px;
+$sidenav-collapsed: 64px;
+$topbar-h: 58px;
+
+.shell-container {
+  height: 100vh;
+  background: var(--bg);
+}
+
+// ── Sidenav ──────────────────────────────────────────────────────────────────
+.sidenav {
+  width: $sidenav-width;
+  background: var(--primary);
+  border-right: none !important;
+  display: flex;
+  flex-direction: column;
+
+  // Brand
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 16px 14px;
+
+    .brand-icon {
+      width: 36px; height: 36px;
+      background: rgba(255,255,255,.15);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      mat-icon { color: #fff; font-size: 20px; width: 20px; height: 20px; }
+    }
+
+    .brand-text {
+      display: flex; flex-direction: column;
+      .brand-name { font-size: 16px; font-weight: 800; color: #fff; letter-spacing: .3px; }
+      .brand-sub  { font-size: 10px; color: rgba(255,255,255,.55); margin-top: 1px; }
+    }
+  }
+
+  mat-divider { border-color: rgba(255,255,255,.12) !important; }
+
+  // Nav
+  .nav-list {
+    padding: 12px 8px;
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    color: rgba(255,255,255,.7);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    transition: background .15s, color .15s;
+    cursor: pointer;
+
+    mat-icon { font-size: 20px; width: 20px; height: 20px; flex-shrink: 0; transition: color .15s; }
+    .nav-label { flex: 1; }
+    .nav-badge {
+      background: #FFC107; color: #000;
+      font-size: 10px; font-weight: 700;
+      padding: 1px 6px; border-radius: 10px;
+    }
+
+    &:hover { background: rgba(255,255,255,.1); color: #fff; }
+
+    &.active {
+      background: rgba(255,255,255,.18);
+      color: #fff;
+      mat-icon { color: #fff; }
+      font-weight: 600;
+    }
+  }
+
+  // Footer
+  .sidenav-footer {
+    padding: 12px;
+    border-top: 1px solid rgba(255,255,255,.12);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .user-info {
+      display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0;
+      .user-avatar {
+        width: 32px; height: 32px; border-radius: 50%;
+        background: rgba(255,255,255,.2);
+        color: #fff; font-size: 13px; font-weight: 700;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+      }
+      .user-details {
+        display: flex; flex-direction: column; min-width: 0;
+        .user-email { font-size: 11px; color: rgba(255,255,255,.85); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .user-role  { font-size: 10px; color: rgba(255,255,255,.5); }
+      }
+    }
+
+    .logout-btn { color: rgba(255,255,255,.6); &:hover { color: #fff; } }
+  }
+}
+
+// ── Main Content ─────────────────────────────────────────────────────────────
+.main-content { display: flex; flex-direction: column; overflow: hidden; }
+
+// ── Topbar ────────────────────────────────────────────────────────────────────
+.topbar {
+  height: $topbar-h;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 16px 0 8px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
+
+  .toggle-btn { color: var(--text-muted); }
+  .topbar-spacer { flex: 1; }
+
+  .topbar-actions { display: flex; align-items: center; gap: 4px; }
+
+  .topbar-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--primary);
+    color: #fff; font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+}
+
+// ── Content Area ─────────────────────────────────────────────────────────────
+.content-area {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--bg);
+}
+
+// ── User Menu ─────────────────────────────────────────────────────────────────
+.menu-user-header {
+  padding: 12px 16px 8px;
+  .menu-email { font-size: 13px; font-weight: 600; color: var(--text); }
+  .menu-role  { font-size: 11px; color: var(--text-muted); }
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────────
+@media (max-width: 768px) {
+  .sidenav { position: fixed !important; z-index: 999; }
+}

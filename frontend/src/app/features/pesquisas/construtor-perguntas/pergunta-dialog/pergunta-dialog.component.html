@@ -1,0 +1,139 @@
+<div class="dialog-header">
+  <mat-icon>quiz</mat-icon>
+  <h3>{{ isEdit ? 'Editar Pergunta' : 'Nova Pergunta' }}</h3>
+  <span class="spacer"></span>
+  <button mat-icon-button (click)="dialogRef.close()"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content class="dialog-body">
+  <form [formGroup]="form">
+
+    <!-- Tipo selector -->
+    <div class="tipo-selector">
+      <label class="field-label">Tipo de pergunta</label>
+      <div class="tipo-buttons">
+        <button *ngFor="let t of tipos" type="button"
+          class="tipo-btn" [class.active]="tipoAtual === t.value"
+          (click)="form.get('tipo')!.setValue(t.value); onTipoChange(t.value)">
+          <mat-icon>{{ t.icon }}</mat-icon>
+          <span>{{ t.label }}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Texto da pergunta -->
+    <mat-form-field appearance="outline" style="margin-top:16px">
+      <mat-label>Texto da pergunta</mat-label>
+      <textarea matInput formControlName="texto" rows="3"
+        placeholder="Ex: Como você avalia os serviços públicos do município?"></textarea>
+      <mat-error>Texto obrigatório</mat-error>
+    </mat-form-field>
+
+    <!-- ESCOLHA ÚNICA / MÚLTIPLA -->
+    <div *ngIf="tipoAtual === 'escolha_unica' || tipoAtual === 'multipla_escolha'" class="alternativas-section">
+      <label class="field-label">Alternativas</label>
+      <div cdkDropList (cdkDropListDropped)="dropAlternativa($event)" class="alt-list">
+        <div *ngFor="let alt of alternativasArray.controls; let i = index"
+          cdkDrag class="alt-row">
+          <mat-icon cdkDragHandle class="alt-drag">drag_indicator</mat-icon>
+          <span class="alt-num">{{ i + 1 }}</span>
+          <mat-form-field appearance="outline" class="alt-field">
+            <input matInput [formControl]="$any(alt).get('texto')"
+              [placeholder]="'Alternativa ' + (i + 1)" />
+          </mat-form-field>
+          <button mat-icon-button type="button" color="warn" (click)="removeAlternativa(i)">
+            <mat-icon>remove_circle_outline</mat-icon>
+          </button>
+          <div *cdkDragPlaceholder class="alt-placeholder"></div>
+        </div>
+      </div>
+      <button mat-stroked-button type="button" (click)="addAlternativa()" class="add-alt-btn">
+        <mat-icon>add</mat-icon> Adicionar Alternativa
+      </button>
+    </div>
+
+    <!-- ESCALA -->
+    <div *ngIf="tipoAtual === 'escala'" class="escala-section">
+      <label class="field-label">Configuração da Escala</label>
+      <div class="escala-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Valor mínimo</mat-label>
+          <input matInput type="number" formControlName="escalaMin" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Valor máximo</mat-label>
+          <input matInput type="number" formControlName="escalaMax" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Rótulo mínimo (opcional)</mat-label>
+          <input matInput formControlName="escalaLabelMin" placeholder="Ex: Muito ruim" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Rótulo máximo (opcional)</mat-label>
+          <input matInput formControlName="escalaLabelMax" placeholder="Ex: Excelente" />
+        </mat-form-field>
+      </div>
+      <div class="escala-preview">
+        <span class="escala-label">{{ form.get('escalaLabelMin')?.value || form.get('escalaMin')?.value }}</span>
+        <div class="escala-bar">
+          <span *ngFor="let n of [].constructor(form.get('escalaMax')?.value - form.get('escalaMin')?.value + 1 || 10); let i = index"
+            class="escala-tick">{{ +form.get('escalaMin')!.value + i }}</span>
+        </div>
+        <span class="escala-label">{{ form.get('escalaLabelMax')?.value || form.get('escalaMax')?.value }}</span>
+      </div>
+    </div>
+
+    <!-- CONDICIONAL -->
+    <div *ngIf="tipoAtual === 'condicional'" class="condicional-section">
+      <label class="field-label">Configuração Condicional</label>
+      <p class="help-text">Esta pergunta só será exibida se a condição abaixo for satisfeita.</p>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Exibir se a resposta à pergunta</mat-label>
+        <mat-select formControlName="perguntaCondicionalId">
+          <mat-option value="">— Selecione uma pergunta —</mat-option>
+          <mat-option *ngFor="let p of perguntasCondicionais" [value]="p.id">
+            {{ p.texto | slice:0:60 }}{{ p.texto.length > 60 ? '…' : '' }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" *ngIf="form.get('perguntaCondicionalId')?.value">
+        <mat-label>For igual a</mat-label>
+        <mat-select formControlName="alternativaCondicionalId">
+          <mat-option value="">— Selecione uma alternativa —</mat-option>
+          <mat-option *ngFor="let a of alternativasCondicional" [value]="a.id">{{ a.texto }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Also allow the condicional question to have its own alternatives -->
+      <div class="alternativas-section" style="margin-top:8px">
+        <label class="field-label">Alternativas desta pergunta</label>
+        <div class="alt-list">
+          <div *ngFor="let alt of alternativasArray.controls; let i = index" class="alt-row">
+            <span class="alt-num">{{ i + 1 }}</span>
+            <mat-form-field appearance="outline" class="alt-field">
+              <input matInput [formControl]="$any(alt).get('texto')" [placeholder]="'Alternativa ' + (i + 1)" />
+            </mat-form-field>
+            <button mat-icon-button type="button" color="warn" (click)="removeAlternativa(i)">
+              <mat-icon>remove_circle_outline</mat-icon>
+            </button>
+          </div>
+        </div>
+        <button mat-stroked-button type="button" (click)="addAlternativa()" class="add-alt-btn">
+          <mat-icon>add</mat-icon> Adicionar Alternativa
+        </button>
+      </div>
+    </div>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" style="padding:12px 24px;gap:8px">
+  <button mat-stroked-button (click)="dialogRef.close()" [disabled]="loading">Cancelar</button>
+  <button mat-raised-button color="primary" (click)="submit()" [disabled]="loading">
+    <mat-spinner *ngIf="loading" diameter="18"></mat-spinner>
+    <mat-icon *ngIf="!loading">save</mat-icon>
+    {{ loading ? 'Salvando...' : 'Salvar Pergunta' }}
+  </button>
+</mat-dialog-actions>

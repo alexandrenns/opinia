@@ -1,0 +1,196 @@
+<div class="page-container">
+  <div class="page-header">
+    <div class="page-title">
+      <div class="title-row">
+        <button mat-icon-button [routerLink]="['/pesquisas', pesquisaId]">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <div>
+          <h2>Distribuição e Tokens</h2>
+          <p>{{ pesquisa?.nome }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="layout-row">
+    <!-- Left: form to generate tokens -->
+    <div class="left-col">
+      <div class="card fade-in">
+        <div class="card-header">
+          <mat-icon>qr_code</mat-icon>
+          <h3>Gerar Tokens por Bairro</h3>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="gerarLote()">
+          <mat-form-field appearance="outline">
+            <mat-label>Bairro</mat-label>
+            <mat-icon matPrefix>place</mat-icon>
+            <mat-select formControlName="bairroId">
+              <mat-option *ngFor="let b of bairros" [value]="b.id">{{
+                b.nome
+              }}</mat-option>
+            </mat-select>
+            <mat-error>Selecione um bairro</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Quantidade de tokens</mat-label>
+            <mat-icon matPrefix>confirmation_number</mat-icon>
+            <input
+              matInput
+              type="number"
+              formControlName="quantidade"
+              min="1"
+              max="50000"
+            />
+            <mat-hint>Máximo 50.000 por lote</mat-hint>
+            <mat-error>Quantidade inválida</mat-error>
+          </mat-form-field>
+
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            [disabled]="gerandoTokens"
+            class="full-btn"
+          >
+            <mat-spinner *ngIf="gerandoTokens" diameter="18"></mat-spinner>
+            <mat-icon *ngIf="!gerandoTokens">generating_tokens</mat-icon>
+            {{ gerandoTokens ? "Gerando..." : "Gerar Tokens" }}
+          </button>
+        </form>
+      </div>
+
+      <!-- Gerar ofícios -->
+      <div class="card fade-in-delay-1" style="margin-top: 16px">
+        <div class="card-header">
+          <mat-icon>description</mat-icon>
+          <h3>Gerar Ofícios PDF</h3>
+        </div>
+        <p class="help-text">
+          Gera 1 página por token com QR Code para impressão.
+        </p>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Modelo de Ofício</mat-label>
+          <mat-select [formControl]="$any(form.get('modeloId'))">
+            <mat-option value="">— Selecione um modelo —</mat-option>
+            <mat-option *ngFor="let m of modelos" [value]="m.id">{{
+              m.nome
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div class="action-btns">
+          <button
+            mat-raised-button
+            color="accent"
+            (click)="gerarOficios()"
+            [disabled]="gerandoOficios || totalTokens === 0"
+            class="full-btn"
+          >
+            <mat-spinner *ngIf="gerandoOficios" diameter="18"></mat-spinner>
+            <mat-icon *ngIf="!gerandoOficios">picture_as_pdf</mat-icon>
+            {{
+              gerandoOficios
+                ? "Gerando..."
+                : "Gerar PDF de Ofícios (" + totalTokens + " páginas)"
+            }}
+          </button>
+
+          <button
+            mat-stroked-button
+            (click)="downloadControle()"
+            [disabled]="totalTokens === 0"
+            class="full-btn"
+          >
+            <mat-icon>list_alt</mat-icon>
+            PDF de Controle
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: lotes table -->
+    <div class="right-col">
+      <!-- Summary stats -->
+      <div class="summary-cards fade-in">
+        <div class="summary-card">
+          <span class="summary-val">{{ totalTokens }}</span>
+          <span class="summary-lbl">Tokens Totais</span>
+        </div>
+        <div class="summary-card success">
+          <span class="summary-val">{{ totalUsados }}</span>
+          <span class="summary-lbl">Respondidos</span>
+        </div>
+        <div class="summary-card warn">
+          <span class="summary-val">{{ totalTokens - totalUsados }}</span>
+          <span class="summary-lbl">Pendentes</span>
+        </div>
+        <div class="summary-card info">
+          <span class="summary-val">{{ taxaGeral }}%</span>
+          <span class="summary-lbl">Participação</span>
+        </div>
+      </div>
+
+      <!-- Lotes table -->
+      <div class="card fade-in-delay-1">
+        <div class="card-header">
+          <mat-icon>view_list</mat-icon>
+          <h3>Lotes Gerados</h3>
+        </div>
+
+        <div *ngIf="loading" class="loading-center">
+          <mat-spinner diameter="32"></mat-spinner>
+        </div>
+
+        <div
+          *ngIf="!loading && lotes.length === 0"
+          class="empty-state"
+          style="padding: 32px"
+        >
+          <mat-icon>confirmation_number</mat-icon>
+          <h3>Nenhum token gerado</h3>
+          <p>Use o formulário ao lado para gerar tokens por bairro</p>
+        </div>
+
+        <div *ngIf="!loading && lotes.length > 0" class="data-table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Bairro</th>
+                <th>Tokens</th>
+                <th>Usados</th>
+                <th>Taxa</th>
+                <th>Progresso</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let l of lotes">
+                <td>
+                  <strong>{{ l.bairro?.nome }}</strong>
+                </td>
+                <td>{{ getLoteTotal(l) }}</td>
+                <td>{{ getLoteUsados(l) }}</td>
+                <td>
+                  <span
+                    class="badge"
+                    [class.badge-success]="getLoteTaxa(l) >= 50"
+                    [class.badge-warning]="getLoteTaxa(l) < 50"
+                  >
+                    {{ getLoteTaxa(l) }}%
+                  </span>
+                </td>
+                <td>
+                  <mat-progress-bar mode="determinate" [value]="getLoteTaxa(l)">
+                  </mat-progress-bar>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

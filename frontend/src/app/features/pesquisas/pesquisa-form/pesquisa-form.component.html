@@ -1,0 +1,92 @@
+<div class="page-container">
+  <div class="page-header">
+    <div class="page-title">
+      <h2>{{ isEdit ? 'Editar Pesquisa' : 'Nova Pesquisa' }}</h2>
+      <p>{{ isEdit ? 'Atualize os dados da pesquisa' : 'Preencha os dados para criar uma nova pesquisa' }}</p>
+    </div>
+    <div class="page-actions">
+      <button mat-stroked-button routerLink="/pesquisas"><mat-icon>arrow_back</mat-icon> Voltar</button>
+    </div>
+  </div>
+
+  <div *ngIf="loadingData" class="loading-center"><mat-spinner diameter="40"></mat-spinner></div>
+
+  <div *ngIf="!loadingData" class="card form-card fade-in">
+    <div class="card-header">
+      <mat-icon>poll</mat-icon>
+      <h3>Dados da Pesquisa</h3>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="form-grid">
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nome da Pesquisa</mat-label>
+          <mat-icon matPrefix>poll</mat-icon>
+          <input matInput formControlName="nome" placeholder="Ex: Pesquisa de Satisfação — Centro" />
+          <mat-error>Nome obrigatório</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Município</mat-label>
+          <mat-icon matPrefix>location_city</mat-icon>
+          <mat-select formControlName="municipioId">
+            <mat-option *ngFor="let m of municipios" [value]="m.id">
+              {{ m.nome }} — {{ m.estado }}
+            </mat-option>
+          </mat-select>
+          <mat-error>Município obrigatório</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Contratante</mat-label>
+          <mat-icon matPrefix>business_center</mat-icon>
+          <mat-select formControlName="contratanteId">
+            <mat-option *ngFor="let c of contratantes" [value]="c.id">
+              {{ c.nome }} — {{ c.tipo }}
+            </mat-option>
+          </mat-select>
+          <mat-error>Contratante obrigatório</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Tipo de Pesquisa</mat-label>
+          <mat-select formControlName="tipo">
+            <mat-option *ngFor="let t of tipos" [value]="t">{{ t }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Data Inicial</mat-label>
+          <input matInput [matDatepicker]="dp1" formControlName="dataInicial" />
+          <mat-datepicker-toggle matSuffix [for]="dp1"></mat-datepicker-toggle>
+          <mat-datepicker #dp1></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Data Final</mat-label>
+          <input matInput [matDatepicker]="dp2" formControlName="dataFinal" />
+          <mat-datepicker-toggle matSuffix [for]="dp2"></mat-datepicker-toggle>
+          <mat-datepicker #dp2></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" *ngIf="isEdit">
+          <mat-label>Status</mat-label>
+          <mat-select formControlName="status">
+            <mat-option *ngFor="let s of statuses" [value]="s">{{ s }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+      </div>
+
+      <div class="form-actions">
+        <button mat-stroked-button type="button" routerLink="/pesquisas" [disabled]="loading">Cancelar</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="loading">
+          <mat-spinner *ngIf="loading" diameter="18"></mat-spinner>
+          <mat-icon *ngIf="!loading">save</mat-icon>
+          {{ loading ? 'Salvando...' : (isEdit ? 'Atualizar Pesquisa' : 'Criar Pesquisa') }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

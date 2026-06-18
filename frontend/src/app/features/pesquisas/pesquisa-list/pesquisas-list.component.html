@@ -1,0 +1,123 @@
+<div class="page-container">
+
+  <div class="page-header">
+    <div class="page-title">
+      <h2>Pesquisas</h2>
+      <p>Gerencie todas as pesquisas da plataforma</p>
+    </div>
+    <div class="page-actions">
+      <button mat-raised-button color="primary" routerLink="/pesquisas/nova">
+        <mat-icon>add</mat-icon> Nova Pesquisa
+      </button>
+    </div>
+  </div>
+
+  <!-- Status summary bar -->
+  <div class="status-bar fade-in">
+    <div *ngFor="let s of countByStatus" class="status-stat"
+      [class.active]="filterStatus === s.status"
+      (click)="filterStatus = filterStatus === s.status ? '' : s.status; applyFilter()">
+      <span class="badge" [ngClass]="statusColors[s.status]">{{ s.status }}</span>
+      <span class="status-count">{{ s.count }}</span>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="card filters-bar fade-in">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Buscar pesquisa ou município</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput [(ngModel)]="search" (ngModelChange)="applyFilter()" />
+      <button *ngIf="search" mat-icon-button matSuffix (click)="search=''; applyFilter()"><mat-icon>close</mat-icon></button>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" style="width:220px; margin:0">
+      <mat-label>Tipo</mat-label>
+      <mat-select [(ngModel)]="filterTipo" (ngModelChange)="applyFilter()">
+        <mat-option value="">Todos os tipos</mat-option>
+        <mat-option *ngFor="let t of tipos" [value]="t">{{ t }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <span class="result-count">{{ filtered.length }} pesquisa(s)</span>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-center"><mat-spinner diameter="40"></mat-spinner></div>
+
+  <!-- Empty -->
+  <div *ngIf="!loading && filtered.length === 0" class="card">
+    <div class="empty-state">
+      <mat-icon>poll</mat-icon>
+      <h3>Nenhuma pesquisa encontrada</h3>
+      <p>Crie a primeira pesquisa da plataforma</p>
+      <button mat-raised-button color="primary" routerLink="/pesquisas/nova">
+        <mat-icon>add</mat-icon> Nova Pesquisa
+      </button>
+    </div>
+  </div>
+
+  <!-- List -->
+  <div *ngIf="!loading && filtered.length > 0" class="pesquisas-list fade-in-delay-1">
+    <div *ngFor="let p of filtered" class="pesquisa-card">
+
+      <div class="pesquisa-header">
+        <div class="pesquisa-info">
+          <div class="pesquisa-badges">
+            <span class="badge" [ngClass]="statusColors[p.status]">{{ p.status }}</span>
+            <span class="badge badge-default">{{ p.tipo }}</span>
+          </div>
+          <h3 class="pesquisa-nome">{{ p.nome }}</h3>
+          <div class="pesquisa-meta">
+            <span><mat-icon>location_city</mat-icon>{{ p.municipio?.nome }}, {{ p.municipio?.estado }}</span>
+            <span><mat-icon>business_center</mat-icon>{{ p.contratante?.nome }}</span>
+            <span *ngIf="p.dataInicial">
+              <mat-icon>calendar_today</mat-icon>
+              {{ p.dataInicial | date:'dd/MM/yyyy' }} — {{ p.dataFinal | date:'dd/MM/yyyy' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="pesquisa-actions">
+          <!-- Primary CTA based on status -->
+          <button mat-raised-button color="primary" [routerLink]="['/pesquisas', p.id]" matTooltip="Ver detalhes">
+            <mat-icon>visibility</mat-icon> Detalhes
+          </button>
+
+          <button mat-icon-button [matMenuTriggerFor]="pMenu" matTooltip="Ações">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+
+          <mat-menu #pMenu="matMenu" xPosition="before">
+            <button mat-menu-item [routerLink]="['/pesquisas', p.id, 'perguntas']">
+              <mat-icon>quiz</mat-icon> Construtor de Perguntas
+            </button>
+            <button mat-menu-item [routerLink]="['/pesquisas', p.id, 'distribuicao']">
+              <mat-icon>share</mat-icon> Distribuição / Tokens
+            </button>
+            <mat-divider></mat-divider>
+            <button mat-menu-item [routerLink]="['/pesquisas', p.id, 'editar']">
+              <mat-icon>edit</mat-icon> Editar
+            </button>
+            <ng-container *ngFor="let s of statuses">
+              <button *ngIf="s !== p.status" mat-menu-item (click)="updateStatus(p, s)">
+                <mat-icon>swap_horiz</mat-icon> Mover para "{{ s }}"
+              </button>
+            </ng-container>
+            <mat-divider></mat-divider>
+            <button mat-menu-item (click)="downloadRelatorio(p)" [disabled]="p.status === 'Planejamento'">
+              <mat-icon>picture_as_pdf</mat-icon> Gerar Relatório PDF
+            </button>
+            <mat-divider></mat-divider>
+            <button mat-menu-item (click)="delete(p)">
+              <mat-icon color="warn">delete</mat-icon>
+              <span style="color:#DC3545">Excluir</span>
+            </button>
+          </mat-menu>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>

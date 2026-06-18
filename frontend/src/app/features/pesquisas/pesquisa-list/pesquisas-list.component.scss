@@ -1,0 +1,57 @@
+.status-bar {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;
+  .status-stat {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 14px; cursor: pointer;
+    transition: box-shadow .15s, border-color .15s;
+    &:hover, &.active { border-color: var(--primary); box-shadow: var(--shadow-sm); }
+    &.active { background: #EBF5FB; }
+    .status-count { font-size: 18px; font-weight: 800; color: var(--text); }
+  }
+}
+
+.filters-bar {
+  display: flex; align-items: center; gap: 16px; padding: 16px 20px; margin-bottom: 20px;
+  .search-field { flex: 1; margin: 0; }
+  .result-count { white-space: nowrap; font-size: 13px; color: var(--text-muted); font-weight: 500; }
+}
+
+.loading-center { display: flex; justify-content: center; padding: 60px; }
+
+.pesquisas-list { display: flex; flex-direction: column; gap: 12px; }
+
+.pesquisa-card {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  padding: 20px 24px;
+  transition: box-shadow .2s, transform .15s;
+  &:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+}
+
+.pesquisa-header {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+  @media (max-width: 768px) { flex-direction: column; }
+}
+
+.pesquisa-info { flex: 1; min-width: 0; }
+
+.pesquisa-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+
+.pesquisa-nome {
+  font-size: 17px; font-weight: 700; color: var(--text);
+  margin-bottom: 10px; line-height: 1.3;
+}
+
+.pesquisa-meta {
+  display: flex; flex-wrap: wrap; gap: 16px;
+  span {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 12px; color: var(--text-muted);
+    mat-icon { font-size: 14px; width: 14px; height: 14px; }
+  }
+}
+
+.pesquisa-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }

@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: opinia_postgres
+    environment:
+      POSTGRES_DB: opinia_db
+      POSTGRES_USER: opinia_user
+      POSTGRES_PASSWORD: opinia_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - opinia_net
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: opinia_backend
+    environment:
+      DATABASE_URL: postgresql://opinia_user:opinia_pass@postgres:5432/opinia_db
+      JWT_SECRET: opinia_jwt_secret_2024_very_secure
+      PORT: 3000
+      FRONTEND_URL: http://localhost:4200
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+      - uploads_data:/app/uploads
+    depends_on:
+      - postgres
+    networks:
+      - opinia_net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: opinia_frontend
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - opinia_net
+
+volumes:
+  postgres_data:
+  uploads_data:
+
+networks:
+  opinia_net:
+    driver: bridge

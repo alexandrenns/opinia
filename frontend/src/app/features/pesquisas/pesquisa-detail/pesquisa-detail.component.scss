@@ -1,0 +1,56 @@
+.loading-center { display:flex; justify-content:center; padding:60px; }
+.title-row { display:flex; align-items:flex-start; gap:4px; }
+.subtitle-badges { display:flex; gap:6px; margin-top:4px; }
+
+.info-row {
+  display:flex; flex-wrap:wrap; gap:12px; margin-bottom:20px;
+  .info-item {
+    display:flex; align-items:center; gap:10px;
+    background:var(--card); border:1px solid var(--border);
+    border-radius:var(--radius); padding:12px 16px;
+    mat-icon { color:var(--primary); flex-shrink:0; }
+    > div { display:flex; flex-direction:column; gap:2px; }
+    .info-label { font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.5px; font-weight:600; }
+    .info-value  { font-size:13px; font-weight:600; color:var(--text); }
+  }
+}
+
+.stats-row {
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+  gap:16px; margin-bottom:20px;
+}
+
+.progress-card {
+  padding:16px 20px; margin-bottom:20px;
+  .progress-header {
+    display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;
+    span { font-size:13px; font-weight:600; }
+    .progress-pct { color:var(--text-muted); font-weight:400; }
+  }
+  mat-progress-bar { height:10px; border-radius:5px; }
+}
+
+.action-panels { display:flex; flex-direction:column; gap:12px; }
+
+.action-panel {
+  display:flex; align-items:center; gap:16px;
+  background:var(--card); border:1px solid var(--border);
+  border-radius:var(--radius-lg); padding:20px 24px;
+  cursor:pointer; transition:box-shadow .2s, transform .15s, border-color .15s;
+  &:hover { box-shadow:var(--shadow-md); transform:translateX(3px); border-color:var(--accent); }
+  &.disabled { opacity:.6; cursor:not-allowed; }
+
+  .panel-icon {
+    width:52px; height:52px; border-radius:12px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    mat-icon { font-size:26px; width:26px; height:26px; }
+  }
+  .panel-content { flex:1; }
+  h4 { font-size:15px; font-weight:700; margin-bottom:4px; }
+  p  { font-size:12px; color:var(--text-muted); margin-bottom:6px; }
+  .panel-badge {
+    background:var(--bg); border:1px solid var(--border);
+    border-radius:12px; font-size:11px; padding:2px 8px; font-weight:600;
+  }
+  .panel-arrow { color:var(--text-muted); }
+}

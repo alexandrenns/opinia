@@ -1,0 +1,77 @@
+.tipo-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+
+.tipo-chip {
+  border-radius: 20px !important; font-size: 12px; height: 32px;
+  &.active { background: var(--primary) !important; color: #fff !important; border-color: var(--primary) !important; }
+  .chip-count {
+    background: rgba(0,0,0,.1); border-radius: 10px;
+    padding: 1px 6px; font-size: 10px; margin-left: 4px; font-weight: 700;
+  }
+  &.active .chip-count { background: rgba(255,255,255,.25); }
+}
+
+.filters-bar {
+  display: flex; align-items: center; gap: 16px; padding: 16px 20px; margin-bottom: 20px;
+  .search-field { flex: 1; margin: 0; }
+  .result-count { white-space: nowrap; font-size: 13px; color: var(--text-muted); font-weight: 500; }
+}
+
+.loading-center { display: flex; justify-content: center; padding: 60px; }
+
+.contratantes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.contratante-card {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: box-shadow .2s, transform .2s;
+  &:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+}
+
+.card-top {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  padding: 16px 12px 8px;
+  .card-actions { display: flex; gap: 0; }
+}
+
+.avatar {
+  width: 52px; height: 52px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 800; color: #fff;
+  flex-shrink: 0;
+  background: var(--primary);
+
+  &.avatar-vereador        { background: linear-gradient(135deg, #0F4C81, #1F6FB2); }
+  &.avatar-pr-candidato,
+  &.avatar-pré-candidato   { background: linear-gradient(135deg, #2E8BC0, #36A2D9); }
+  &.avatar-partido         { background: linear-gradient(135deg, #FFC107, #FF9800); }
+  &.avatar-consultor       { background: linear-gradient(135deg, #198754, #22A06B); }
+  &.avatar-outros          { background: linear-gradient(135deg, #6B7280, #9CA3AF); }
+}
+
+.card-body { padding: 0 16px 16px; }
+
+.contratante-nome {
+  font-size: 15px; font-weight: 700; color: var(--text);
+  margin-bottom: 8px; line-height: 1.3;
+}
+
+.contratante-meta { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; }
+
+.contratante-tel {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 12px; color: var(--text-muted); margin-bottom: 6px;
+  mat-icon { font-size: 14px; width: 14px; height: 14px; }
+}
+
+.contratante-obs {
+  font-size: 12px; color: var(--text-muted);
+  line-height: 1.5; margin-top: 6px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}

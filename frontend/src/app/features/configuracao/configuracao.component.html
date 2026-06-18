@@ -1,0 +1,145 @@
+<div class="page-container">
+
+  <div class="page-header">
+    <div class="page-title">
+      <h2>Configuração da Plataforma</h2>
+      <p>Personalize o nome, logo, textos e URL pública do sistema</p>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading-center"><mat-spinner diameter="40"></mat-spinner></div>
+
+  <div *ngIf="!loading" class="config-layout fade-in">
+
+    <!-- Preview card -->
+    <div class="preview-col">
+      <div class="card preview-card">
+        <div class="card-header">
+          <mat-icon>preview</mat-icon>
+          <h3>Pré-visualização</h3>
+        </div>
+        <div class="platform-preview">
+          <div class="preview-logo-wrap">
+            <img *ngIf="logoPreview" [src]="logoPreview" alt="Logo" class="preview-logo" />
+            <div *ngIf="!logoPreview" class="preview-logo-ph">
+              <mat-icon>analytics</mat-icon>
+            </div>
+          </div>
+          <h2 class="preview-name">{{ form.get('nomePlataforma')?.value || 'Opinia' }}</h2>
+          <p class="preview-text">{{ form.get('textoInstitucional')?.value || 'Plataforma de Pesquisa de Opinião Pública' }}</p>
+          <div class="preview-url">
+            <mat-icon>link</mat-icon>
+            <span>{{ form.get('publicUrl')?.value || 'http://localhost:4200' }}</span>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="preview-footer">
+          <p>{{ form.get('rodapePadrao')?.value }}</p>
+        </div>
+      </div>
+
+      <!-- Info chips -->
+      <div class="info-chips">
+        <div class="info-chip">
+          <mat-icon>qr_code</mat-icon>
+          <div>
+            <span class="chip-label">URL dos QR Codes</span>
+            <span class="chip-value">{{ form.get('publicUrl')?.value }}/r/TOKEN</span>
+          </div>
+        </div>
+        <div class="info-chip">
+          <mat-icon>picture_as_pdf</mat-icon>
+          <div>
+            <span class="chip-label">Usado nos PDFs</span>
+            <span class="chip-value">Ofícios e Relatórios</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form col -->
+    <div class="form-col">
+      <form [formGroup]="form" (ngSubmit)="save()">
+
+        <!-- Logo upload -->
+        <div class="card section-card">
+          <div class="card-header"><mat-icon>image</mat-icon><h3>Logo da Plataforma</h3></div>
+          <div class="logo-upload">
+            <div class="logo-current" (click)="logoInput.click()">
+              <img *ngIf="logoPreview" [src]="logoPreview" alt="Logo atual" />
+              <div *ngIf="!logoPreview" class="logo-ph">
+                <mat-icon>add_photo_alternate</mat-icon>
+                <span>Clique para adicionar logo</span>
+              </div>
+              <div class="logo-overlay"><mat-icon>photo_camera</mat-icon></div>
+            </div>
+            <div class="logo-actions">
+              <button mat-stroked-button type="button" (click)="logoInput.click()">
+                <mat-icon>upload</mat-icon> {{ logoPreview ? 'Alterar Logo' : 'Carregar Logo' }}
+              </button>
+              <button *ngIf="logoPreview" mat-stroked-button type="button" color="warn" (click)="removeLogo()">
+                <mat-icon>delete</mat-icon> Remover
+              </button>
+            </div>
+            <input #logoInput type="file" accept="image/png,image/jpeg,image/svg+xml" hidden (change)="onLogoSelected($event)" />
+            <p class="upload-hint">PNG, JPG ou SVG. Recomendado: fundo transparente, mín. 200×200px</p>
+          </div>
+        </div>
+
+        <!-- General settings -->
+        <div class="card section-card">
+          <div class="card-header"><mat-icon>tune</mat-icon><h3>Informações Gerais</h3></div>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Nome da Plataforma</mat-label>
+            <mat-icon matPrefix>analytics</mat-icon>
+            <input matInput formControlName="nomePlataforma" placeholder="Ex: Opinia" />
+            <mat-hint>Exibido nos PDFs, ofícios e portal público</mat-hint>
+            <mat-error>Nome obrigatório</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>URL Pública da Plataforma</mat-label>
+            <mat-icon matPrefix>link</mat-icon>
+            <input matInput formControlName="publicUrl" placeholder="https://seudominio.com.br" />
+            <mat-hint>Usada para gerar os QR Codes. Ex: https://pesquisa.seumunicipio.gov.br</mat-hint>
+            <mat-error>URL obrigatória</mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Texts -->
+        <div class="card section-card">
+          <div class="card-header"><mat-icon>text_fields</mat-icon><h3>Textos Padrão</h3></div>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Texto Institucional Padrão</mat-label>
+            <textarea matInput formControlName="textoInstitucional" rows="4"
+              placeholder="Descrição da plataforma usada nos documentos…"></textarea>
+            <mat-hint>Aparece nos ofícios gerados (pode ser sobrescrito pelo modelo)</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Rodapé Padrão</mat-label>
+            <textarea matInput formControlName="rodapePadrao" rows="2"
+              placeholder="Ex: Opinia — Todos os direitos reservados."></textarea>
+            <mat-hint>Usado no rodapé de PDFs e ofícios</mat-hint>
+          </mat-form-field>
+        </div>
+
+        <!-- Save button -->
+        <div class="save-row">
+          <button mat-raised-button color="primary" type="submit" [disabled]="saving" class="save-btn">
+            <mat-spinner *ngIf="saving" diameter="18"></mat-spinner>
+            <mat-icon *ngIf="!saving">save</mat-icon>
+            {{ saving ? 'Salvando...' : 'Salvar Configurações' }}
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+  </div>
+
+</div>

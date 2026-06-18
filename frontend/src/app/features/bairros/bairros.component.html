@@ -1,0 +1,132 @@
+<div class="page-container">
+  <div class="page-header">
+    <div class="page-title">
+      <h2>Bairros</h2>
+      <p>Gerencie os bairros por município</p>
+    </div>
+    <div class="page-actions">
+      <button mat-raised-button color="primary" (click)="openDialog()">
+        <mat-icon>add</mat-icon> Novo Bairro
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="card filters-bar fade-in">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Buscar bairro</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput [(ngModel)]="search" (ngModelChange)="applyFilter()" />
+      <button
+        *ngIf="search"
+        mat-icon-button
+        matSuffix
+        (click)="search = ''; applyFilter()"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="municipio-filter">
+      <mat-label>Filtrar por município</mat-label>
+      <mat-select [(ngModel)]="selectedMunicipioId" (ngModelChange)="load()">
+        <mat-option value="">Todos os municípios</mat-option>
+        <mat-option *ngFor="let m of municipios" [value]="m.id">
+          {{ m.nome }} — {{ m.estado }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <span class="result-count">{{ filtered.length }} bairros</span>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-center">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <!-- Empty -->
+  <div *ngIf="!loading && filtered.length === 0" class="card">
+    <div class="empty-state">
+      <mat-icon>map</mat-icon>
+      <h3>Nenhum bairro encontrado</h3>
+      <p>Cadastre bairros para os municípios da plataforma</p>
+      <button mat-raised-button color="primary" (click)="openDialog()">
+        <mat-icon>add</mat-icon> Novo Bairro
+      </button>
+    </div>
+  </div>
+
+  <!-- Grouped by município — usa groupedBairros (propriedade), nunca getter -->
+  <div *ngIf="!loading && filtered.length > 0" class="fade-in-delay-1">
+    <mat-expansion-panel
+      *ngFor="let group of groupedBairros"
+      class="municipio-group"
+      expanded
+    >
+      <mat-expansion-panel-header>
+        <mat-panel-title class="group-title">
+          <mat-icon>location_city</mat-icon>
+          <span>{{ group.municipio?.nome || "Município desconhecido" }}</span>
+          <span class="group-estado">{{ group.municipio?.estado }}</span>
+        </mat-panel-title>
+        <mat-panel-description>
+          <span class="badge badge-primary"
+            >{{ group.bairros.length }} bairros</span
+          >
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <div class="bairros-grid">
+        <div *ngFor="let b of group.bairros" class="bairro-card">
+          <div class="bairro-info">
+            <mat-icon class="bairro-icon">place</mat-icon>
+            <div>
+              <span class="bairro-nome">{{ b.nome }}</span>
+              <span
+                class="badge"
+                [class.badge-success]="b.ativo"
+                [class.badge-error]="!b.ativo"
+              >
+                {{ b.ativo ? "Ativo" : "Inativo" }}
+              </span>
+            </div>
+          </div>
+          <div class="bairro-actions">
+            <button
+              mat-icon-button
+              color="primary"
+              (click)="openDialog(b)"
+              matTooltip="Editar"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              [matMenuTriggerFor]="bMenu"
+              matTooltip="Mais"
+            >
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #bMenu="matMenu">
+              <button mat-menu-item (click)="toggleStatus(b)">
+                <mat-icon>{{ b.ativo ? "toggle_off" : "toggle_on" }}</mat-icon>
+                <span>{{ b.ativo ? "Inativar" : "Ativar" }}</span>
+              </button>
+              <button mat-menu-item (click)="delete(b)">
+                <mat-icon color="warn">delete</mat-icon>
+                <span style="color: #dc3545">Excluir</span>
+              </button>
+            </mat-menu>
+          </div>
+        </div>
+
+        <!-- Add bairro shortcut -->
+        <div class="bairro-card add-card" (click)="openDialog()">
+          <mat-icon>add_circle_outline</mat-icon>
+          <span>Adicionar bairro</span>
+        </div>
+      </div>
+    </mat-expansion-panel>
+  </div>
+</div>

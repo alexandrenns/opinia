@@ -1,0 +1,65 @@
+.filters-bar {
+  display: flex; align-items: center; gap: 16px; padding: 16px 20px; margin-bottom: 20px;
+  .search-field { flex: 1; margin: 0; }
+  .municipio-filter { width: 260px; margin: 0; }
+  .result-count { white-space: nowrap; font-size: 13px; color: var(--text-muted); font-weight: 500; }
+}
+
+.loading-center { display: flex; justify-content: center; padding: 60px; }
+
+.municipio-group {
+  margin-bottom: 12px;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-sm) !important;
+  border: 1px solid var(--border) !important;
+
+  .group-title {
+    display: flex; align-items: center; gap: 8px;
+    font-weight: 600; font-size: 14px;
+    mat-icon { color: var(--primary); font-size: 18px; width: 18px; height: 18px; }
+    .group-estado { font-size: 11px; color: var(--text-muted); font-weight: 400; }
+  }
+}
+
+.bairros-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  padding: 4px 0 8px;
+}
+
+.bairro-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: box-shadow .15s, border-color .15s;
+
+  &:hover { box-shadow: var(--shadow-sm); border-color: var(--accent); }
+
+  .bairro-info {
+    display: flex; align-items: center; gap: 8px; min-width: 0;
+    .bairro-icon { color: var(--text-muted); font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; }
+    > div { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+    .bairro-nome { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .badge { font-size: 9px; padding: 1px 6px; }
+  }
+
+  .bairro-actions { display: flex; gap: 0; flex-shrink: 0; }
+}
+
+.add-card {
+  border: 2px dashed var(--border);
+  background: transparent;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 12px;
+  transition: border-color .15s, color .15s;
+  mat-icon { font-size: 20px; width: 20px; height: 20px; }
+  &:hover { border-color: var(--primary); color: var(--primary); }
+}
