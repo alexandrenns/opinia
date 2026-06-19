@@ -68,6 +68,6 @@ export class MunicipiosComponent implements OnInit {
 
   getImageUrl(path: string | null): string {
     if (!path) return '';
-    return path.startsWith('http') ? path : `http://localhost:3000${path}`;
+    return path.startsWith('http') ? path : `http://191.252.201.112:3000${path}`;
   }
 }
