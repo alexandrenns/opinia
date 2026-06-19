@@ -34,7 +34,7 @@ export class ConfiguracaoComponent implements OnInit {
       next: (c) => {
         this.config = c;
         this.form.patchValue(c);
-        if (c.logo) this.logoPreview = `http://191.252.201.112:3000${c.logo}`;
+        if (c.logo) this.logoPreview = `https://directory-maritime-clouds-sean.trycloudflare.com:3000${c.logo}`;
         this.loading = false;
       },
       error: () => (this.loading = false),
