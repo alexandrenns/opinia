@@ -41,7 +41,7 @@ export class MunicipioDialogComponent implements OnInit {
       this.isEdit = true;
       this.form.patchValue(this.data.municipio);
       if (this.data.municipio.brasao) {
-        this.previewUrl = `https://directory-maritime-clouds-sean.trycloudflare.com:3000${this.data.municipio.brasao}`;
+        this.previewUrl = `https://responses-brings-friday-mental.trycloudflare.com:3000${this.data.municipio.brasao}`;
       }
     }
   }

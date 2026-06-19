@@ -33,7 +33,7 @@ export class LoginComponent {
     const { email, password } = this.form.value;
 
     this.http
-      .post<any>("https://directory-maritime-clouds-sean.trycloudflare.com:3000/auth/login", { email, password })
+      .post<any>("https://responses-brings-friday-mental.trycloudflare.com:3000/auth/login", { email, password })
       .subscribe({
         next: (res) => {
           if (res?.access_token) {
