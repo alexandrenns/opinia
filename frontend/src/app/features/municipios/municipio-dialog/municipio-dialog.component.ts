@@ -41,7 +41,7 @@ export class MunicipioDialogComponent implements OnInit {
       this.isEdit = true;
       this.form.patchValue(this.data.municipio);
       if (this.data.municipio.brasao) {
-        this.previewUrl = `https://localhost:3000${this.data.municipio.brasao}`;
+        this.previewUrl = `/api${this.data.municipio.brasao}`;
       }
     }
   }
