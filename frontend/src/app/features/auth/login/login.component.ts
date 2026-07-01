@@ -33,7 +33,7 @@ export class LoginComponent {
     const { email, password } = this.form.value;
 
     this.http
-      .post<any>("http://localhost:3000/auth/login", { email, password })
+      .post<any>("/api/auth/login", { email, password })
       .subscribe({
         next: (res) => {
           if (res?.access_token) {

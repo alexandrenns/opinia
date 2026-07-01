@@ -34,7 +34,7 @@ export class ConfiguracaoComponent implements OnInit {
       next: (c) => {
         this.config = c;
         this.form.patchValue(c);
-        if (c.logo) this.logoPreview = `http://localhost:3000${c.logo}`;
+        if (c.logo) this.logoPreview = `${c.logo.startsWith('http') ? c.logo : '/api' + c.logo}`;
         this.loading = false;
       },
       error: () => (this.loading = false),
