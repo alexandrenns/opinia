@@ -122,7 +122,7 @@ export class OficiosService {
           .fillColor(SECONDARY)
           .font("Helvetica")
           .fontSize(10)
-          .text("índice de Opinião Pública Municipal", xText, 52, {
+          .text("Pesquisa de Opinião Pública e Afins", xText, 52, {
             width: 390,
           });
 
