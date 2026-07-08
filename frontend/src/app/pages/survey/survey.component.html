@@ -51,10 +51,9 @@
         <img *ngIf="config?.logo" [src]="getImageUrl(config.logo)" alt="Logo" />
         <mat-icon *ngIf="!config?.logo">analytics</mat-icon>
       </div>
-      <span class="topbar-name"
-        >{{ config?.nomePlataforma || "Prisma da Bahia"
-        }}<b>{{Pesquisa de Opinião Pública}}</b></span
-      >
+      <span class="topbar-name">{{
+        config?.nomePlataforma || "Pesquisa de Opinião Pública"
+      }}</span>
     </div>
 
     <!-- Brasão do município -->
