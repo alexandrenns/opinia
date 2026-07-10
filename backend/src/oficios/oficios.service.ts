@@ -17,12 +17,10 @@ const RED = "#c0392b";
 const WHITE = "#FFFFFF";
 const LGRAY = "#f5f7fa";
 const DGRAY = "#333333";
-const MGRAY = "#666666";
+const MGRAY = "#777777";
 const BGRAY = "#dde3ec";
-const LBLUE = "#e8f0fc";
 
 // ── MAPEAMENTO CENTRALIZADO DE ÍCONES POR TEMA ───────────────────────────────
-// Para adicionar um novo tema: inclua uma entrada { abbr, color } aqui.
 const TOPIC_MAP: Record<string, { abbr: string; color: string }> = {
   Saúde: { abbr: "+", color: "#e74c3c" },
   Saude: { abbr: "+", color: "#e74c3c" },
@@ -68,12 +66,15 @@ const TOPIC_MAP: Record<string, { abbr: string; color: string }> = {
 };
 
 function getTopicInfo(tipo: string): { abbr: string; color: string } {
-  return TOPIC_MAP[tipo] || { abbr: "★", color: NAVY };
+  return TOPIC_MAP[tipo] || { abbr: "P", color: NAVY };
 }
 
-// ── HELPERS DE DESENHO ────────────────────────────────────────────────────────
+// ── HELPERS ───────────────────────────────────────────────────────────────────
 
-/** Círculo preenchido com letra/abreviação centralizada */
+/**
+ * Círculo preenchido com letra centralizada.
+ * O texto é posicionado manualmente usando as dimensões do círculo.
+ */
 function drawIconCircle(
   doc: any,
   cx: number,
@@ -83,18 +84,24 @@ function drawIconCircle(
   label: string,
   fontSize: number,
 ): void {
+  // Círculo
   doc.circle(cx, cy, r).fill(bgColor);
+  // Texto centrado: y = centro do círculo menos metade da altura da fonte
+  const ty = cy - fontSize * 0.72;
   doc
     .fillColor(WHITE)
     .font("Helvetica-Bold")
     .fontSize(fontSize)
-    .text(label, cx - r, cy - fontSize / 2 - 1, {
+    .text(label, cx - r, ty, {
       width: r * 2,
       align: "center",
+      lineBreak: false,
     });
 }
 
-/** Linha tracejada usando segmentos curtos (sem lineDash — compatível com PDFKit 0.x) */
+/**
+ * Linha tracejada por segmentos (compatível com qualquer versão do PDFKit).
+ */
 function drawDashedLine(
   doc: any,
   x1: number,
@@ -102,8 +109,8 @@ function drawDashedLine(
   x2: number,
   color: string,
 ): void {
-  const dash = 4;
-  const gap = 4;
+  const dash = 4,
+    gap = 4;
   let x = x1;
   while (x < x2) {
     const end = Math.min(x + dash, x2);
@@ -143,7 +150,7 @@ export class OficiosService {
     return this.modeloRepo.delete(id);
   }
 
-  // ── GERAÇÃO DO PDF DE OFÍCIOS ─────────────────────────────────────────────
+  // ── PDF DE OFÍCIOS ────────────────────────────────────────────────────────
   async gerarPdfOficios(pesquisaId: string, modeloId: string): Promise<Buffer> {
     // Busca de dados (lógica original preservada)
     const pesquisa = await this.pesquisaRepo.findOne({
@@ -174,20 +181,16 @@ export class OficiosService {
     const brasaoPath = pesquisa.municipio?.brasao
       ? join(process.cwd(), pesquisa.municipio.brasao)
       : null;
-    const brasaoExiste = brasaoPath && existsSync(brasaoPath);
+    const brasaoExiste = !!(brasaoPath && existsSync(brasaoPath));
 
     const prismaLogoPath = join(process.cwd(), "assets", "prisma-logo.png");
-    const prismaLogoExiste = existsSync(prismaLogoPath);
-
     const configLogoPath = config?.logo
       ? join(process.cwd(), config.logo)
       : null;
-    const configLogoExiste = configLogoPath && existsSync(configLogoPath);
-
-    const logoPath = prismaLogoExiste
+    const logoPath = existsSync(prismaLogoPath)
       ? prismaLogoPath
-      : configLogoExiste
-        ? configLogoPath!
+      : configLogoPath && existsSync(configLogoPath)
+        ? configLogoPath
         : null;
 
     const municipioNome = pesquisa.municipio?.nome || "";
@@ -195,7 +198,6 @@ export class OficiosService {
     const tema = pesquisa.tipo || pesquisa.nome || "";
     const topicInfo = getTopicInfo(tema);
 
-    // Geração do PDF (lógica de buffer/stream original preservada)
     return new Promise(async (resolve, reject) => {
       const doc = new PDFDocument({
         size: "A4",
@@ -203,9 +205,8 @@ export class OficiosService {
         autoFirstPage: false,
         bufferPages: false,
       });
-
       const buffers: Buffer[] = [];
-      doc.on("data", (chunk) => buffers.push(chunk));
+      doc.on("data", (c) => buffers.push(c));
       doc.on("end", () => resolve(Buffer.concat(buffers)));
       doc.on("error", reject);
 
@@ -213,63 +214,74 @@ export class OficiosService {
         const { codigo, bairro } = allTokens[i];
         const url = `${publicUrl}/r/${codigo}`;
 
-        // Uma página por token (lógica original preservada)
         doc.addPage({ size: "A4", margin: 0 });
 
         // ════════════════════════════════════════════════════
         // 1. CABEÇALHO  (Y: 0 → 112)
         // ════════════════════════════════════════════════════
         doc.rect(0, 0, 595, 112).fill(WHITE);
-        doc.rect(0, 0, 5, 112).fill(NAVY); // barra lateral
+        // Barra lateral esquerda
+        doc.rect(0, 0, 5, 112).fill(NAVY);
 
+        // Logo do Instituto
         if (logoPath) {
-          doc.image(logoPath, 18, 16, { width: 78, height: 78 });
+          doc.image(logoPath, 14, 15, { width: 78, height: 78 });
         }
 
-        const textX = logoPath ? 108 : 45;
+        // Zona do brasão: reserva os últimos 135pt à direita
+        const sepX = 460; // x do separador
+        const textX = logoPath ? 103 : 42;
+        const textW = sepX - textX - 8; // largura do bloco de texto
 
         doc
           .fillColor(NAVY)
           .font("Helvetica-Bold")
-          .fontSize(17)
-          .text("INSTITUTO PRISMA DA BAHIA", textX, 20, { width: 375 });
+          .fontSize(16.5)
+          .text("INSTITUTO PRISMA DA BAHIA", textX, 20, { width: textW });
         doc
           .fillColor("#4a4a6a")
           .font("Helvetica")
           .fontSize(9.5)
           .text("Pesquisa de Opinião Pública e Afins", textX, 42, {
-            width: 375,
+            width: textW,
           });
         doc
           .fillColor(RED)
           .font("Helvetica-Oblique")
           .fontSize(9)
           .text("Transformando opiniões em conhecimento.", textX, 57, {
-            width: 375,
+            width: textW,
           });
         doc
-          .fillColor("#777777")
+          .fillColor(MGRAY)
           .font("Helvetica")
           .fontSize(9)
           .text(
             `${municipioNome}${municipioEstado ? " – " + municipioEstado : ""}`,
             textX,
             72,
-            { width: 375 },
+            { width: textW },
           );
 
+        // Brasão — centralizado no espaço à direita do separador
         if (brasaoExiste) {
+          // Separador sutil
           doc
-            .moveTo(496, 14)
-            .lineTo(496, 98)
-            .strokeColor("#dddddd")
-            .lineWidth(1)
+            .moveTo(sepX, 14)
+            .lineTo(sepX, 98)
+            .strokeColor("#e0e0e0")
+            .lineWidth(0.8)
             .stroke();
-          doc.image(brasaoPath!, 505, 16, { width: 68, height: 68 });
+
+          const rightZoneW = 595 - sepX; // 135pt
+          const bW = 70;
+          const bX = sepX + (rightZoneW - bW) / 2; // centro horizontal
+          const bY = (112 - bW) / 2; // centro vertical
+          doc.image(brasaoPath!, bX, bY, { width: bW, height: bW });
         }
 
         // ════════════════════════════════════════════════════
-        // 2. SEPARADOR  (Y: 112 → 115)
+        // 2. SEPARADOR  (Y: 112)
         // ════════════════════════════════════════════════════
         doc.rect(0, 112, 595, 3).fill(NAVY);
 
@@ -278,7 +290,7 @@ export class OficiosService {
         // ════════════════════════════════════════════════════
         doc.rect(0, 115, 595, 73).fill(NAVY);
 
-        // Elementos diagonais decorativos
+        // Faixas diagonais decorativas
         doc
           .moveTo(430, 115)
           .lineTo(595, 115)
@@ -309,8 +321,8 @@ export class OficiosService {
 
         // ════════════════════════════════════════════════════
         // 4. CONTEÚDO  (Y: 196 → 646)
-        // Coluna esquerda: x=40,  w=252
-        // Coluna direita:  x=307, w=248
+        // Coluna esquerda x=40  w=252
+        // Coluna direita  x=307 w=248
         // ════════════════════════════════════════════════════
         const LX = 40,
           LW = 252;
@@ -318,7 +330,7 @@ export class OficiosService {
           RW = 248;
         const CY = 196;
 
-        // ── Badge do tema ────────────────────────────────────
+        // ── Badge da pesquisa ─────────────────────────────
         doc
           .roundedRect(LX, CY, LW, 32, 5)
           .strokeColor(NAVY)
@@ -329,6 +341,7 @@ export class OficiosService {
           .font("Helvetica-Bold")
           .fontSize(8.5)
           .text("PESQUISA:", LX + 10, CY + 11);
+
         const pillX = LX + 82,
           pillW = LW - 92;
         doc.roundedRect(pillX, CY + 4, pillW, 24, 12).fill(RED);
@@ -341,7 +354,7 @@ export class OficiosService {
             align: "center",
           });
 
-        // ── Texto institucional ──────────────────────────────
+        // ── Texto institucional ───────────────────────────
         const bodyText =
           modelo.textoInstitucional ||
           `Prezado(a) cidadão(ã),\n\nO Instituto Prisma da Bahia está realizando uma Pesquisa de Opinião Pública com o objetivo de compreender a percepção da população sobre os serviços prestados no município de ${municipioNome}–${municipioEstado}.\n\nSua participação é voluntária, anônima e de grande importância para a produção de informações confiáveis que contribuam para estudos, análises e avaliações da opinião da população.`;
@@ -363,16 +376,20 @@ export class OficiosService {
           .text(
             "Sua colaboração fortalece a qualidade das pesquisas e contribui para uma compreensão mais precisa da realidade do município.",
             LX,
-            408,
+            406,
             { width: LW, align: "justify", lineGap: 2 },
           );
 
-        // ── Card de Garantias ────────────────────────────────
-        const gY = 430,
-          gH = 216;
-        doc.rect(LX + 2, gY + 2, LW, gH).fill("#e2e8f0");
+        // ── Card de Garantias ─────────────────────────────
+        const gY = 428,
+          gH = 218;
+
+        // Sombra sutil
+        doc.rect(LX + 2, gY + 2, LW, gH).fill("#e0e6f0");
+        // Card
         doc.rect(LX, gY, LW, gH).fill(WHITE);
         doc.rect(LX, gY, LW, gH).strokeColor(BGRAY).lineWidth(1).stroke();
+        // Cabeçalho do card
         doc.rect(LX, gY, LW, 28).fill(NAVY);
         doc
           .fillColor(WHITE)
@@ -383,40 +400,39 @@ export class OficiosService {
             align: "center",
           });
 
+        // Itens — ícones em navy com letra branca
         const guarantees = [
-          { text: "Participação voluntária", letter: "P" },
-          { text: "Respostas anônimas", letter: "S" },
-          { text: "Nenhum CPF ou documento é solicitado", letter: "D" },
+          { text: "Participação voluntária", letter: "P", color: NAVY },
+          { text: "Respostas anônimas", letter: "S", color: NAVY },
+          {
+            text: "Nenhum CPF ou documento é solicitado",
+            letter: "D",
+            color: NAVY,
+          },
           {
             text: "Resultado apresentado apenas de forma coletiva",
             letter: "R",
+            color: NAVY,
           },
-          { text: "Tempo médio: 2 minutos", letter: "T" },
+          { text: "Tempo médio: 2 minutos", letter: "T", color: BLUE },
         ];
 
         let gy2 = gY + 40;
         for (let gi = 0; gi < guarantees.length; gi++) {
-          drawIconCircle(
-            doc,
-            LX + 18,
-            gy2 + 10,
-            11,
-            LBLUE,
-            guarantees[gi].letter,
-            7,
-          );
+          const g = guarantees[gi];
+          drawIconCircle(doc, LX + 18, gy2 + 10, 12, g.color, g.letter, 7.5);
           doc
             .fillColor(DGRAY)
             .font("Helvetica")
             .fontSize(8.5)
-            .text(guarantees[gi].text, LX + 36, gy2 + 5);
+            .text(g.text, LX + 36, gy2 + 5);
           if (gi < guarantees.length - 1) {
-            drawDashedLine(doc, LX + 36, gy2 + 26, LX + LW - 8, "#cccccc");
+            drawDashedLine(doc, LX + 36, gy2 + 26, LX + LW - 10, "#cccccc");
           }
           gy2 += 37;
         }
 
-        // ── Card QR Code ─────────────────────────────────────
+        // ── Card QR Code ──────────────────────────────────
         doc.rect(RX, CY, RW, 300).strokeColor(BGRAY).lineWidth(1).stroke();
         doc.rect(RX, CY, RW, 28).fill(NAVY);
         doc
@@ -428,7 +444,8 @@ export class OficiosService {
             align: "center",
           });
 
-        drawIconCircle(doc, RX + 24, CY + 50, 16, LBLUE, "QR", 7);
+        // Ícone de celular
+        drawIconCircle(doc, RX + 24, CY + 50, 16, NAVY, "QR", 7);
         doc
           .fillColor(DGRAY)
           .font("Helvetica")
@@ -440,7 +457,7 @@ export class OficiosService {
             { width: 196, lineGap: 1 },
           );
 
-        // Moldura do QR com acentos coloridos
+        // Moldura do QR
         const qrFX = RX + 12,
           qrFY = CY + 76,
           qrSZ = 222;
@@ -450,6 +467,7 @@ export class OficiosService {
           .lineWidth(2.5)
           .stroke();
 
+        // Acentos coloridos nos cantos
         const qrR = qrFX + qrSZ + 4,
           qrB = qrFY + qrSZ + 4;
         doc
@@ -477,7 +495,7 @@ export class OficiosService {
           .lineWidth(4)
           .stroke();
 
-        // Geração do QR Code (lógica original preservada)
+        // QR Code (lógica original preservada)
         const qrBuffer = await QRCode.toBuffer(url, {
           errorCorrectionLevel: "H",
           width: qrSZ,
@@ -485,7 +503,7 @@ export class OficiosService {
         });
         doc.image(qrBuffer, qrFX, qrFY, { width: qrSZ });
 
-        // ── Card Código de Acesso ────────────────────────────
+        // ── Card Código de Acesso ─────────────────────────
         const acY = CY + 307,
           acH = 145;
         doc.rect(RX, acY, RW, acH).strokeColor(BGRAY).lineWidth(1).stroke();
@@ -523,7 +541,8 @@ export class OficiosService {
             characterSpacing: 5,
           });
 
-        drawIconCircle(doc, RX + 20, acY + 113, 9, LBLUE, "W", 6);
+        // URL
+        drawIconCircle(doc, RX + 20, acY + 113, 9, BLUE, "W", 6);
         doc
           .fillColor(MGRAY)
           .font("Helvetica")
@@ -596,7 +615,7 @@ export class OficiosService {
             .fillColor(sec.valueColor)
             .font("Helvetica-Bold")
             .fontSize(8.5)
-            .text(sec.value, sx + 44, ibY + 23, { width: secW - 56 });
+            .text(sec.value, sx + 44, ibY + 23, { width: secW - 54 });
         });
 
         // ════════════════════════════════════════════════════
@@ -606,7 +625,9 @@ export class OficiosService {
           pvH = 44;
         doc.rect(40, pvY, 515, pvH).fill(LGRAY);
         doc.rect(40, pvY, 515, pvH).strokeColor(BGRAY).lineWidth(0.5).stroke();
+
         drawIconCircle(doc, 60, pvY + pvH / 2, 14, NAVY, "S", 8);
+
         doc
           .fillColor(MGRAY)
           .font("Helvetica")
@@ -637,7 +658,7 @@ export class OficiosService {
           });
 
         // ════════════════════════════════════════════════════
-        // 7. RODAPÉ INSTITUCIONAL  (Y: 765 → 842)
+        // 7. RODAPÉ  (Y: 765 → 842)
         // ════════════════════════════════════════════════════
         const ftY = 765;
         doc.rect(0, ftY, 595, 77).fill(NAVY);
@@ -653,17 +674,18 @@ export class OficiosService {
           const fx = idx * ftColW;
           if (idx > 0) {
             doc
-              .moveTo(fx, ftY + 15)
+              .moveTo(fx, ftY + 14)
               .lineTo(fx, ftY + 62)
-              .strokeColor("#ffffff")
-              .lineWidth(0.3)
+              .strokeColor("#2a5080")
+              .lineWidth(1)
               .stroke();
           }
+          // Círculo com cor visível sobre fundo navy
           drawIconCircle(
             doc,
-            fx + ftColW / 2 - 45,
+            fx + ftColW / 2 - 48,
             ftY + 38,
-            9,
+            10,
             BLUE,
             col.icon,
             6,
@@ -672,15 +694,16 @@ export class OficiosService {
             .fillColor(WHITE)
             .font("Helvetica")
             .fontSize(8.5)
-            .text(col.text, fx + ftColW / 2 - 28, ftY + 33, { width: 160 });
+            .text(col.text, fx + ftColW / 2 - 32, ftY + 32, { width: 155 });
         });
 
+        // Número de página
         doc
-          .fillColor(MGRAY)
+          .fillColor("#5a8ab8")
           .font("Helvetica")
           .fontSize(7)
           .text(`${i + 1} / ${allTokens.length}`, 0, ftY + 63, {
-            width: 590,
+            width: 588,
             align: "right",
           });
       }
@@ -689,10 +712,9 @@ export class OficiosService {
     });
   }
 
-  // ── GERAÇÃO DO PDF DE CONTROLE (inalterado) ───────────────────────────────
+  // ── PDF DE CONTROLE (inalterado) ──────────────────────────────────────────
   async gerarPdfControle(pesquisaId: string): Promise<Buffer> {
     const PRIMARY = "#0F4C81";
-
     const pesquisa = await this.pesquisaRepo.findOne({
       where: { id: pesquisaId },
       relations: ["municipio"],
@@ -714,10 +736,9 @@ export class OficiosService {
       doc.on("error", reject);
 
       doc.addPage({ size: "A4", margin: 0 });
-
       doc.rect(0, 0, 595, 75).fill(PRIMARY);
       doc
-        .fillColor("#FFFFFF")
+        .fillColor(WHITE)
         .font("Helvetica-Bold")
         .fontSize(14)
         .text("RELATÓRIO DE CONTROLE DE TOKENS", 40, 15, {
@@ -752,8 +773,9 @@ export class OficiosService {
             doc.addPage({ size: "A4", margin: 0 });
             y = 30;
           }
-          const bg = rowIdx % 2 === 0 ? "#FFFFFF" : "#F8F9FB";
-          doc.rect(40, y, 515, ROW_H).fill(bg);
+          doc
+            .rect(40, y, 515, ROW_H)
+            .fill(rowIdx % 2 === 0 ? WHITE : "#F8F9FB");
           doc
             .fillColor("#333")
             .font("Helvetica-Bold")
@@ -761,7 +783,6 @@ export class OficiosService {
             .text(token.codigo, 50, y + 6);
           doc
             .font("Helvetica")
-            .fillColor("#333")
             .text(lote.bairro.nome, 130, y + 6, { width: 145 })
             .text(pesquisa?.nome || "", 280, y + 6, { width: 185 });
           doc
@@ -794,7 +815,6 @@ export class OficiosService {
           y + 14,
           { align: "center", width: 515 },
         );
-
       doc.end();
     });
   }
