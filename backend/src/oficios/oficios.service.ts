@@ -10,19 +10,19 @@ import { Lote } from "../tokens/lote.entity";
 import { Pesquisa } from "../pesquisas/pesquisa.entity";
 import { ConfiguracaoSistema } from "../configuracao/configuracao-sistema.entity";
 
-// ── PALETA DE CORES ─────────────────────────────────────────────────────────
-const NAVY = "#0a2855"; // Azul escuro institucional
-const BLUE = "#1a5cb8"; // Azul médio
-const RED = "#c0392b"; // Vermelho
+// ── PALETA DE CORES ──────────────────────────────────────────────────────────
+const NAVY = "#0a2855";
+const BLUE = "#1a5cb8";
+const RED = "#c0392b";
 const WHITE = "#FFFFFF";
-const LGRAY = "#f5f7fa"; // Cinza claro de fundo
-const DGRAY = "#333333"; // Cinza escuro (texto)
-const MGRAY = "#666666"; // Cinza médio
-const BGRAY = "#dde3ec"; // Cinza de borda
-const LBLUE = "#e8f0fc"; // Azul claro (fundos de ícone)
+const LGRAY = "#f5f7fa";
+const DGRAY = "#333333";
+const MGRAY = "#666666";
+const BGRAY = "#dde3ec";
+const LBLUE = "#e8f0fc";
 
-// ── MAPEAMENTO CENTRALIZADO DE ÍCONES POR TEMA ──────────────────────────────
-// Cada tema possui: abbr (abreviação para renderizar no círculo) e color
+// ── MAPEAMENTO CENTRALIZADO DE ÍCONES POR TEMA ───────────────────────────────
+// Para adicionar um novo tema: inclua uma entrada { abbr, color } aqui.
 const TOPIC_MAP: Record<string, { abbr: string; color: string }> = {
   Saúde: { abbr: "+", color: "#e74c3c" },
   Saude: { abbr: "+", color: "#e74c3c" },
@@ -71,9 +71,9 @@ function getTopicInfo(tipo: string): { abbr: string; color: string } {
   return TOPIC_MAP[tipo] || { abbr: "★", color: NAVY };
 }
 
-// ── HELPERS DE DESENHO ───────────────────────────────────────────────────────
+// ── HELPERS DE DESENHO ────────────────────────────────────────────────────────
 
-/** Desenha um círculo preenchido com uma letra/abreviação centrada */
+/** Círculo preenchido com letra/abreviação centralizada */
 function drawIconCircle(
   doc: any,
   cx: number,
@@ -81,35 +81,38 @@ function drawIconCircle(
   r: number,
   bgColor: string,
   label: string,
-  fontSize = 7,
-) {
+  fontSize: number,
+): void {
   doc.circle(cx, cy, r).fill(bgColor);
-  const textW = r * 2;
-  const textX = cx - r;
-  const textY = cy - fontSize / 2 - 1;
   doc
     .fillColor(WHITE)
     .font("Helvetica-Bold")
     .fontSize(fontSize)
-    .text(label, textX, textY, { width: textW, align: "center" });
+    .text(label, cx - r, cy - fontSize / 2 - 1, {
+      width: r * 2,
+      align: "center",
+    });
 }
 
-/** Desenha linha tracejada */
+/** Linha tracejada usando segmentos curtos (sem lineDash — compatível com PDFKit 0.x) */
 function drawDashedLine(
   doc: any,
   x1: number,
   y: number,
   x2: number,
-  color = "#cccccc",
-) {
-  doc.save();
-  doc.lineDash(3, { space: 3 });
-  doc.moveTo(x1, y).lineTo(x2, y).strokeColor(color).lineWidth(0.5).stroke();
-  doc.undash();
-  doc.restore();
+  color: string,
+): void {
+  const dash = 4;
+  const gap = 4;
+  let x = x1;
+  while (x < x2) {
+    const end = Math.min(x + dash, x2);
+    doc.moveTo(x, y).lineTo(end, y).strokeColor(color).lineWidth(0.5).stroke();
+    x += dash + gap;
+  }
 }
 
-// ── SERVICE ──────────────────────────────────────────────────────────────────
+// ── SERVICE ───────────────────────────────────────────────────────────────────
 
 @Injectable()
 export class OficiosService {
@@ -140,9 +143,9 @@ export class OficiosService {
     return this.modeloRepo.delete(id);
   }
 
-  // ── GERAÇÃO DO PDF DE OFÍCIOS (REDESENHADO) ──────────────────────────────
+  // ── GERAÇÃO DO PDF DE OFÍCIOS ─────────────────────────────────────────────
   async gerarPdfOficios(pesquisaId: string, modeloId: string): Promise<Buffer> {
-    // Busca de dados (lógica preservada na íntegra)
+    // Busca de dados (lógica original preservada)
     const pesquisa = await this.pesquisaRepo.findOne({
       where: { id: pesquisaId },
       relations: ["municipio", "contratante"],
@@ -167,23 +170,21 @@ export class OficiosService {
       }
     }
 
-    // Caminhos de imagens (lógica preservada)
+    // Caminhos de imagens (lógica original preservada)
     const brasaoPath = pesquisa.municipio?.brasao
       ? join(process.cwd(), pesquisa.municipio.brasao)
       : null;
     const brasaoExiste = brasaoPath && existsSync(brasaoPath);
 
-    // Logo do Instituto Prisma (salvo em backend/assets/prisma-logo.png)
     const prismaLogoPath = join(process.cwd(), "assets", "prisma-logo.png");
     const prismaLogoExiste = existsSync(prismaLogoPath);
 
-    // Fallback: logo configurada pelo admin
     const configLogoPath = config?.logo
       ? join(process.cwd(), config.logo)
       : null;
     const configLogoExiste = configLogoPath && existsSync(configLogoPath);
 
-    const effectiveLogoPath = prismaLogoExiste
+    const logoPath = prismaLogoExiste
       ? prismaLogoPath
       : configLogoExiste
         ? configLogoPath!
@@ -194,6 +195,7 @@ export class OficiosService {
     const tema = pesquisa.tipo || pesquisa.nome || "";
     const topicInfo = getTopicInfo(tema);
 
+    // Geração do PDF (lógica de buffer/stream original preservada)
     return new Promise(async (resolve, reject) => {
       const doc = new PDFDocument({
         size: "A4",
@@ -211,29 +213,26 @@ export class OficiosService {
         const { codigo, bairro } = allTokens[i];
         const url = `${publicUrl}/r/${codigo}`;
 
+        // Uma página por token (lógica original preservada)
         doc.addPage({ size: "A4", margin: 0 });
 
-        // ══════════════════════════════════════════════════════════════════════
+        // ════════════════════════════════════════════════════
         // 1. CABEÇALHO  (Y: 0 → 112)
-        // ══════════════════════════════════════════════════════════════════════
+        // ════════════════════════════════════════════════════
         doc.rect(0, 0, 595, 112).fill(WHITE);
+        doc.rect(0, 0, 5, 112).fill(NAVY); // barra lateral
 
-        // Barra lateral esquerda em azul escuro
-        doc.rect(0, 0, 5, 112).fill(NAVY);
-
-        // Logo do Instituto
-        if (effectiveLogoPath) {
-          doc.image(effectiveLogoPath, 18, 16, { width: 78, height: 78 });
+        if (logoPath) {
+          doc.image(logoPath, 18, 16, { width: 78, height: 78 });
         }
 
-        const textX = effectiveLogoPath ? 108 : 45;
+        const textX = logoPath ? 108 : 45;
 
         doc
           .fillColor(NAVY)
           .font("Helvetica-Bold")
           .fontSize(17)
           .text("INSTITUTO PRISMA DA BAHIA", textX, 20, { width: 375 });
-
         doc
           .fillColor("#4a4a6a")
           .font("Helvetica")
@@ -241,7 +240,6 @@ export class OficiosService {
           .text("Pesquisa de Opinião Pública e Afins", textX, 42, {
             width: 375,
           });
-
         doc
           .fillColor(RED)
           .font("Helvetica-Oblique")
@@ -249,7 +247,6 @@ export class OficiosService {
           .text("Transformando opiniões em conhecimento.", textX, 57, {
             width: 375,
           });
-
         doc
           .fillColor("#777777")
           .font("Helvetica")
@@ -261,7 +258,6 @@ export class OficiosService {
             { width: 375 },
           );
 
-        // Brasão do município (direita, com separador sutil)
         if (brasaoExiste) {
           doc
             .moveTo(496, 14)
@@ -272,15 +268,17 @@ export class OficiosService {
           doc.image(brasaoPath!, 505, 16, { width: 68, height: 68 });
         }
 
-        // ── Linha separadora ──────────────────────────────────────────────────
+        // ════════════════════════════════════════════════════
+        // 2. SEPARADOR  (Y: 112 → 115)
+        // ════════════════════════════════════════════════════
         doc.rect(0, 112, 595, 3).fill(NAVY);
 
-        // ══════════════════════════════════════════════════════════════════════
-        // 2. FAIXA DE TÍTULO  (Y: 115 → 188)
-        // ══════════════════════════════════════════════════════════════════════
+        // ════════════════════════════════════════════════════
+        // 3. FAIXA DE TÍTULO  (Y: 115 → 188)
+        // ════════════════════════════════════════════════════
         doc.rect(0, 115, 595, 73).fill(NAVY);
 
-        // Elemento decorativo: faixa diagonal azul médio (direita)
+        // Elementos diagonais decorativos
         doc
           .moveTo(430, 115)
           .lineTo(595, 115)
@@ -288,8 +286,6 @@ export class OficiosService {
           .lineTo(480, 180)
           .closePath()
           .fill(BLUE);
-
-        // Elemento decorativo: faixa diagonal vermelha
         doc
           .moveTo(530, 115)
           .lineTo(595, 115)
@@ -298,7 +294,6 @@ export class OficiosService {
           .closePath()
           .fill(RED);
 
-        // Texto do título
         doc
           .fillColor("#b8cde8")
           .font("Helvetica")
@@ -306,38 +301,34 @@ export class OficiosService {
           .text("CONVITE OFICIAL PARA PARTICIPAÇÃO EM", 42, 128, {
             width: 420,
           });
-
         doc
           .fillColor(WHITE)
           .font("Helvetica-Bold")
           .fontSize(17)
           .text("PESQUISA DE OPINIÃO PÚBLICA", 42, 143, { width: 440 });
 
-        // ══════════════════════════════════════════════════════════════════════
-        // 3. ÁREA DE CONTEÚDO  (Y: 196 → 646)
-        // Coluna esquerda: x=40, w=252
+        // ════════════════════════════════════════════════════
+        // 4. CONTEÚDO  (Y: 196 → 646)
+        // Coluna esquerda: x=40,  w=252
         // Coluna direita:  x=307, w=248
-        // ══════════════════════════════════════════════════════════════════════
+        // ════════════════════════════════════════════════════
         const LX = 40,
           LW = 252;
         const RX = 307,
           RW = 248;
         const CY = 196;
 
-        // ── 3a. BADGE DA PESQUISA ─────────────────────────────────────────────
+        // ── Badge do tema ────────────────────────────────────
         doc
           .roundedRect(LX, CY, LW, 32, 5)
           .strokeColor(NAVY)
           .lineWidth(1.5)
           .stroke();
-
         doc
           .fillColor(NAVY)
           .font("Helvetica-Bold")
           .fontSize(8.5)
           .text("PESQUISA:", LX + 10, CY + 11);
-
-        // Pílula colorida com o tema
         const pillX = LX + 82,
           pillW = LW - 92;
         doc.roundedRect(pillX, CY + 4, pillW, 24, 12).fill(RED);
@@ -350,9 +341,7 @@ export class OficiosService {
             align: "center",
           });
 
-        // ── 3b. TEXTO INSTITUCIONAL ──────────────────────────────────────────
-        const bodyY = CY + 44;
-
+        // ── Texto institucional ──────────────────────────────
         const bodyText =
           modelo.textoInstitucional ||
           `Prezado(a) cidadão(ã),\n\nO Instituto Prisma da Bahia está realizando uma Pesquisa de Opinião Pública com o objetivo de compreender a percepção da população sobre os serviços prestados no município de ${municipioNome}–${municipioEstado}.\n\nSua participação é voluntária, anônima e de grande importância para a produção de informações confiáveis que contribuam para estudos, análises e avaliações da opinião da população.`;
@@ -361,13 +350,12 @@ export class OficiosService {
           .fillColor(DGRAY)
           .font("Helvetica")
           .fontSize(9)
-          .text(bodyText, LX, bodyY, {
+          .text(bodyText, LX, CY + 44, {
             width: LW,
             align: "justify",
             lineGap: 2,
           });
 
-        // Parágrafo de encerramento
         doc
           .fillColor(DGRAY)
           .font("Helvetica")
@@ -379,17 +367,12 @@ export class OficiosService {
             { width: LW, align: "justify", lineGap: 2 },
           );
 
-        // ── 3c. CARD DE GARANTIAS ────────────────────────────────────────────
+        // ── Card de Garantias ────────────────────────────────
         const gY = 430,
           gH = 216;
-
-        // Sombra sutil
         doc.rect(LX + 2, gY + 2, LW, gH).fill("#e2e8f0");
-        // Card branco
         doc.rect(LX, gY, LW, gH).fill(WHITE);
         doc.rect(LX, gY, LW, gH).strokeColor(BGRAY).lineWidth(1).stroke();
-
-        // Cabeçalho do card
         doc.rect(LX, gY, LW, 28).fill(NAVY);
         doc
           .fillColor(WHITE)
@@ -400,7 +383,6 @@ export class OficiosService {
             align: "center",
           });
 
-        // Itens de garantia
         const guarantees = [
           { text: "Participação voluntária", letter: "P" },
           { text: "Respostas anônimas", letter: "S" },
@@ -414,28 +396,28 @@ export class OficiosService {
 
         let gy2 = gY + 40;
         for (let gi = 0; gi < guarantees.length; gi++) {
-          const g = guarantees[gi];
-          // Ícone círculo
-          drawIconCircle(doc, LX + 18, gy2 + 10, 11, LBLUE, g.letter, 7);
-          doc.fillColor(NAVY).font("Helvetica-Bold").fontSize(7);
-          // Texto da garantia
+          drawIconCircle(
+            doc,
+            LX + 18,
+            gy2 + 10,
+            11,
+            LBLUE,
+            guarantees[gi].letter,
+            7,
+          );
           doc
             .fillColor(DGRAY)
             .font("Helvetica")
             .fontSize(8.5)
-            .text(g.text, LX + 36, gy2 + 5);
-
+            .text(guarantees[gi].text, LX + 36, gy2 + 5);
           if (gi < guarantees.length - 1) {
-            drawDashedLine(doc, LX + 36, gy2 + 26, LX + LW - 8);
+            drawDashedLine(doc, LX + 36, gy2 + 26, LX + LW - 8, "#cccccc");
           }
           gy2 += 37;
         }
 
-        // ── 3d. CARD DO QR CODE ──────────────────────────────────────────────
-        // Borda externa do card
+        // ── Card QR Code ─────────────────────────────────────
         doc.rect(RX, CY, RW, 300).strokeColor(BGRAY).lineWidth(1).stroke();
-
-        // Cabeçalho do card
         doc.rect(RX, CY, RW, 28).fill(NAVY);
         doc
           .fillColor(WHITE)
@@ -446,7 +428,6 @@ export class OficiosService {
             align: "center",
           });
 
-        // Ícone de smartphone e instrução
         drawIconCircle(doc, RX + 24, CY + 50, 16, LBLUE, "QR", 7);
         doc
           .fillColor(DGRAY)
@@ -459,21 +440,18 @@ export class OficiosService {
             { width: 196, lineGap: 1 },
           );
 
-        // Moldura do QR Code (borda azul/vermelha no estilo da referência)
+        // Moldura do QR com acentos coloridos
         const qrFX = RX + 12,
-          qrFY = CY + 76;
-        const qrSZ = 222; // tamanho do QR (quadrado)
-
-        // Moldura principal azul
+          qrFY = CY + 76,
+          qrSZ = 222;
         doc
           .rect(qrFX - 4, qrFY - 4, qrSZ + 8, qrSZ + 8)
           .strokeColor(BLUE)
           .lineWidth(2.5)
           .stroke();
 
-        // Acento vermelho — canto inferior direito
-        const qrR = qrFX + qrSZ + 4;
-        const qrB = qrFY + qrSZ + 4;
+        const qrR = qrFX + qrSZ + 4,
+          qrB = qrFY + qrSZ + 4;
         doc
           .moveTo(qrR, qrB - 45)
           .lineTo(qrR, qrB)
@@ -486,8 +464,6 @@ export class OficiosService {
           .strokeColor(RED)
           .lineWidth(4)
           .stroke();
-
-        // Acento azul escuro — canto superior esquerdo
         doc
           .moveTo(qrFX - 4, qrFY - 4)
           .lineTo(qrFX + 40, qrFY - 4)
@@ -501,7 +477,7 @@ export class OficiosService {
           .lineWidth(4)
           .stroke();
 
-        // Geração do QR Code (lógica preservada)
+        // Geração do QR Code (lógica original preservada)
         const qrBuffer = await QRCode.toBuffer(url, {
           errorCorrectionLevel: "H",
           width: qrSZ,
@@ -509,13 +485,10 @@ export class OficiosService {
         });
         doc.image(qrBuffer, qrFX, qrFY, { width: qrSZ });
 
-        // ── 3e. CARD DE CÓDIGO DE ACESSO ─────────────────────────────────────
+        // ── Card Código de Acesso ────────────────────────────
         const acY = CY + 307,
           acH = 145;
-
         doc.rect(RX, acY, RW, acH).strokeColor(BGRAY).lineWidth(1).stroke();
-
-        // Cabeçalho azul escuro
         doc.rect(RX, acY, RW, 38).fill(NAVY);
         doc
           .fillColor(WHITE)
@@ -531,7 +504,6 @@ export class OficiosService {
           .fontSize(7.5)
           .text("O QR CODE", RX, acY + 21, { width: RW, align: "center" });
 
-        // Subtítulo
         doc
           .fillColor(MGRAY)
           .font("Helvetica")
@@ -541,7 +513,6 @@ export class OficiosService {
             align: "center",
           });
 
-        // Código em destaque
         doc
           .fillColor(DGRAY)
           .font("Helvetica-Bold")
@@ -552,29 +523,27 @@ export class OficiosService {
             characterSpacing: 5,
           });
 
-        // URL de acesso
-        const urlRowY = acY + 105;
-        drawIconCircle(doc, RX + 20, urlRowY + 8, 9, LBLUE, "W", 6);
+        drawIconCircle(doc, RX + 20, acY + 113, 9, LBLUE, "W", 6);
         doc
           .fillColor(MGRAY)
           .font("Helvetica")
           .fontSize(7.5)
-          .text("Acesse:", RX + 35, urlRowY + 3);
+          .text("Acesse:", RX + 35, acY + 107);
         doc
           .fillColor(BLUE)
           .font("Helvetica")
           .fontSize(7.5)
-          .text(url, RX + 35, urlRowY + 15, { width: RW - 40 });
+          .text(url, RX + 35, acY + 119, { width: RW - 40 });
 
-        // ══════════════════════════════════════════════════════════════════════
-        // 4. BARRA DE INFORMAÇÕES  (Y: 658 → 708)
-        // ══════════════════════════════════════════════════════════════════════
+        // ════════════════════════════════════════════════════
+        // 5. BARRA DE INFORMAÇÕES  (Y: 658 → 708)
+        // ════════════════════════════════════════════════════
         const ibY = 658,
           ibH = 50;
         doc.rect(40, ibY, 515, ibH).fill(WHITE);
         doc.rect(40, ibY, 515, ibH).strokeColor(BGRAY).lineWidth(1).stroke();
 
-        const infoSections = [
+        const infoSecs = [
           {
             label: "LOCAL DA PESQUISA",
             value: bairro,
@@ -599,10 +568,8 @@ export class OficiosService {
         ];
 
         const secW = 515 / 3;
-        infoSections.forEach((sec, idx) => {
+        infoSecs.forEach((sec, idx) => {
           const sx = 40 + idx * secW;
-
-          // Divisor vertical (exceto no primeiro)
           if (idx > 0) {
             doc
               .moveTo(sx, ibY + 8)
@@ -611,13 +578,15 @@ export class OficiosService {
               .lineWidth(1)
               .stroke();
           }
-
-          // Ícone
-          const icCX = sx + 22,
-            icCY = ibY + ibH / 2;
-          drawIconCircle(doc, icCX, icCY, 15, sec.iconColor, sec.iconLetter, 7);
-
-          // Rótulo e valor
+          drawIconCircle(
+            doc,
+            sx + 22,
+            ibY + ibH / 2,
+            15,
+            sec.iconColor,
+            sec.iconLetter,
+            7,
+          );
           doc
             .fillColor(MGRAY)
             .font("Helvetica")
@@ -630,18 +599,14 @@ export class OficiosService {
             .text(sec.value, sx + 44, ibY + 23, { width: secW - 56 });
         });
 
-        // ══════════════════════════════════════════════════════════════════════
-        // 5. BOX DE PRIVACIDADE  (Y: 715 → 759)
-        // ══════════════════════════════════════════════════════════════════════
+        // ════════════════════════════════════════════════════
+        // 6. BOX DE PRIVACIDADE  (Y: 715 → 759)
+        // ════════════════════════════════════════════════════
         const pvY = 715,
           pvH = 44;
         doc.rect(40, pvY, 515, pvH).fill(LGRAY);
         doc.rect(40, pvY, 515, pvH).strokeColor(BGRAY).lineWidth(0.5).stroke();
-
-        // Ícone de cadeado
         drawIconCircle(doc, 60, pvY + pvH / 2, 14, NAVY, "S", 8);
-
-        // Texto esquerdo
         doc
           .fillColor(MGRAY)
           .font("Helvetica")
@@ -652,8 +617,6 @@ export class OficiosService {
             pvY + 8,
             { width: 230, lineGap: 1 },
           );
-
-        // Texto direito
         doc
           .fillColor(NAVY)
           .font("Helvetica")
@@ -673,13 +636,11 @@ export class OficiosService {
             align: "center",
           });
 
-        // ══════════════════════════════════════════════════════════════════════
-        // 6. RODAPÉ INSTITUCIONAL  (Y: 765 → 842)
-        // ══════════════════════════════════════════════════════════════════════
+        // ════════════════════════════════════════════════════
+        // 7. RODAPÉ INSTITUCIONAL  (Y: 765 → 842)
+        // ════════════════════════════════════════════════════
         const ftY = 765;
         doc.rect(0, ftY, 595, 77).fill(NAVY);
-
-        // Linha decorativa no topo do rodapé
         doc.rect(0, ftY, 595, 3).fill(RED);
 
         const footerCols = [
@@ -687,33 +648,26 @@ export class OficiosService {
           { icon: "@", text: "contato@institutoprisma.com.br" },
           { icon: "IG", text: "/institutoprisma" },
         ];
-
         const ftColW = 595 / 3;
         footerCols.forEach((col, idx) => {
           const fx = idx * ftColW;
-
-          // Divisor vertical
           if (idx > 0) {
             doc
               .moveTo(fx, ftY + 15)
               .lineTo(fx, ftY + 62)
-              .strokeColor("rgba(255,255,255,0.2)")
-              .lineWidth(0.5)
+              .strokeColor("#ffffff")
+              .lineWidth(0.3)
               .stroke();
           }
-
-          // Ícone
           drawIconCircle(
             doc,
             fx + ftColW / 2 - 45,
             ftY + 38,
             9,
-            "rgba(255,255,255,0.2)" as any,
+            BLUE,
             col.icon,
             6,
           );
-
-          // Texto
           doc
             .fillColor(WHITE)
             .font("Helvetica")
@@ -721,12 +675,11 @@ export class OficiosService {
             .text(col.text, fx + ftColW / 2 - 28, ftY + 33, { width: 160 });
         });
 
-        // Número de página
         doc
-          .fillColor("rgba(255,255,255,0.5)" as any)
+          .fillColor(MGRAY)
           .font("Helvetica")
           .fontSize(7)
-          .text(`${i + 1} / ${allTokens.length}`, 0, ftY + 64, {
+          .text(`${i + 1} / ${allTokens.length}`, 0, ftY + 63, {
             width: 590,
             align: "right",
           });
@@ -762,7 +715,6 @@ export class OficiosService {
 
       doc.addPage({ size: "A4", margin: 0 });
 
-      // Header
       doc.rect(0, 0, 595, 75).fill(PRIMARY);
       doc
         .fillColor("#FFFFFF")
@@ -785,7 +737,6 @@ export class OficiosService {
       let y = 85;
       const ROW_H = 20;
 
-      // Cabeçalho da tabela
       doc.rect(40, y, 515, ROW_H).fill("#E8EFF7");
       doc.fillColor(PRIMARY).font("Helvetica-Bold").fontSize(8);
       doc.text("TOKEN", 50, y + 6);
@@ -803,7 +754,6 @@ export class OficiosService {
           }
           const bg = rowIdx % 2 === 0 ? "#FFFFFF" : "#F8F9FB";
           doc.rect(40, y, 515, ROW_H).fill(bg);
-
           doc
             .fillColor("#333")
             .font("Helvetica-Bold")
@@ -818,13 +768,11 @@ export class OficiosService {
             .fillColor(token.usado ? "#198754" : "#CC8800")
             .font("Helvetica-Bold")
             .text(token.usado ? "RESPONDIDO" : "PENDENTE", 470, y + 6);
-
           y += ROW_H;
           rowIdx++;
         }
       }
 
-      // Resumo
       const total = lotes.reduce((s, l) => s + l.tokens.length, 0);
       const usados = lotes.reduce(
         (s, l) => s + l.tokens.filter((t: any) => t.usado).length,
