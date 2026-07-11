@@ -27,7 +27,6 @@ const BGRAY = "#dde3ec";
 // ════════════════════════════════════════════════════════════════════════════
 type IconFn = (doc: any, cx: number, cy: number, s: number, bg: string) => void;
 
-/** Silhueta de pessoa */
 function iconPerson(
   doc: any,
   cx: number,
@@ -50,7 +49,6 @@ function iconPerson(
     .fill(WHITE);
 }
 
-/** Escudo com marca de verificação */
 function iconShield(
   doc: any,
   cx: number,
@@ -92,7 +90,6 @@ function iconShield(
     .stroke();
 }
 
-/** Documento / ficha com linhas */
 function iconDocument(
   doc: any,
   cx: number,
@@ -110,7 +107,6 @@ function iconDocument(
   }
 }
 
-/** Gráfico de barras */
 function iconChart(
   doc: any,
   cx: number,
@@ -135,7 +131,6 @@ function iconChart(
     .stroke();
 }
 
-/** Relógio */
 function iconClock(
   doc: any,
   cx: number,
@@ -165,7 +160,6 @@ function iconClock(
   doc.circle(cx, cy, s * 0.1).fill(WHITE);
 }
 
-/** Alfinete de localização */
 function iconPin(
   doc: any,
   cx: number,
@@ -183,7 +177,6 @@ function iconPin(
   doc.circle(cx, cy - s * 0.22, s * 0.27).fill(bg);
 }
 
-/** Coração com linha de pulso */
 function iconHeart(
   doc: any,
   cx: number,
@@ -241,7 +234,6 @@ function iconHeart(
     .stroke();
 }
 
-/** Edifício / prédio governamental */
 function iconBuilding(
   doc: any,
   cx: number,
@@ -261,7 +253,6 @@ function iconBuilding(
   });
 }
 
-/** Cadeado */
 function iconLock(
   doc: any,
   cx: number,
@@ -291,7 +282,6 @@ function iconLock(
   doc.circle(cx, cy + s * 0.3, s * 0.2).fill(bg);
 }
 
-/** Globo / web */
 function iconGlobe(
   doc: any,
   cx: number,
@@ -344,7 +334,6 @@ function iconGlobe(
     .stroke();
 }
 
-/** Envelope / e-mail */
 function iconEnvelope(
   doc: any,
   cx: number,
@@ -368,7 +357,6 @@ function iconEnvelope(
     .stroke();
 }
 
-/** Câmera / Instagram simplificado */
 function iconCamera(
   doc: any,
   cx: number,
@@ -392,7 +380,6 @@ function iconCamera(
     .fill(WHITE);
 }
 
-/** Smartphone (para instrução do QR) */
 function iconPhone(
   doc: any,
   cx: number,
@@ -477,7 +464,6 @@ function getTopicInfo(tipo: string): TopicInfo {
 // HELPERS DE LAYOUT
 // ════════════════════════════════════════════════════════════════════════════
 
-/** Desenha círculo preenchido + chama a função de ícone dentro dele */
 function drawCircleIcon(
   doc: any,
   cx: number,
@@ -490,7 +476,6 @@ function drawCircleIcon(
   iconFn(doc, cx, cy, r * 0.62, bgColor);
 }
 
-/** Linha tracejada por segmentos (compatível com qualquer versão do PDFKit) */
 function drawDashedLine(
   doc: any,
   x1: number,
@@ -527,7 +512,6 @@ export class OficiosService {
     private configRepo: Repository<ConfiguracaoSistema>,
   ) {}
 
-  // ── CRUD (inalterado) ─────────────────────────────────────────────────────
   findAll() {
     return this.modeloRepo.find({ order: { nome: "ASC" } });
   }
@@ -545,9 +529,7 @@ export class OficiosService {
     return this.modeloRepo.delete(id);
   }
 
-  // ── PDF DE OFÍCIOS ────────────────────────────────────────────────────────
   async gerarPdfOficios(pesquisaId: string, modeloId: string): Promise<Buffer> {
-    // Busca de dados (lógica original preservada)
     const pesquisa = await this.pesquisaRepo.findOne({
       where: { id: pesquisaId },
       relations: ["municipio", "contratante"],
@@ -572,7 +554,6 @@ export class OficiosService {
       }
     }
 
-    // Caminhos de imagens (lógica original preservada)
     const brasaoPath = pesquisa.municipio?.brasao
       ? join(process.cwd(), pesquisa.municipio.brasao)
       : null;
@@ -590,8 +571,13 @@ export class OficiosService {
 
     const municipioNome = pesquisa.municipio?.nome || "";
     const municipioEstado = pesquisa.municipio?.estado || "";
-    const tema = pesquisa.tipo || pesquisa.nome || "";
-    const topicInfo = getTopicInfo(tema);
+
+    // tipo → usado apenas para cor/ícone do TEMA
+    const tipo = pesquisa.tipo || "";
+    const topicInfo = getTopicInfo(tipo);
+
+    // nome → exibido na badge PESQUISA e no valor de TEMA
+    const nomePesquisa = pesquisa.nome || tipo;
 
     return new Promise(async (resolve, reject) => {
       const doc = new PDFDocument({
@@ -615,7 +601,7 @@ export class OficiosService {
         // 1. CABEÇALHO  (Y: 0 → 112)
         // ════════════════════════════════════════════════════
         doc.rect(0, 0, 595, 112).fill(WHITE);
-        doc.rect(0, 0, 5, 112).fill(NAVY); // barra lateral
+        doc.rect(0, 0, 5, 112).fill(NAVY);
 
         if (logoPath) {
           doc.image(logoPath, 14, 15, { width: 78, height: 78 });
@@ -655,7 +641,6 @@ export class OficiosService {
             { width: textW },
           );
 
-        // Brasão centrado na zona direita
         if (brasaoExiste) {
           doc
             .moveTo(sepX, 14)
@@ -670,7 +655,7 @@ export class OficiosService {
         }
 
         // ════════════════════════════════════════════════════
-        // 2. SEPARADOR  (Y: 112)
+        // 2. SEPARADOR
         // ════════════════════════════════════════════════════
         doc.rect(0, 112, 595, 3).fill(NAVY);
 
@@ -707,8 +692,6 @@ export class OficiosService {
 
         // ════════════════════════════════════════════════════
         // 4. CONTEÚDO  (Y: 196 → 646)
-        //    Coluna esquerda  x=40  w=252
-        //    Coluna direita   x=307 w=248
         // ════════════════════════════════════════════════════
         const LX = 40,
           LW = 252;
@@ -716,7 +699,7 @@ export class OficiosService {
           RW = 248;
         const CY = 196;
 
-        // ── Badge da pesquisa ─────────────────────────────
+        // ── Badge PESQUISA: exibe o NOME da pesquisa ──────
         doc
           .roundedRect(LX, CY, LW, 32, 5)
           .strokeColor(NAVY)
@@ -727,16 +710,22 @@ export class OficiosService {
           .font("Helvetica-Bold")
           .fontSize(8.5)
           .text("PESQUISA:", LX + 10, CY + 11);
+
         const pillX = LX + 82,
           pillW = LW - 92;
+        // Tamanho da fonte adaptável ao comprimento do nome
+        const pillFontSize =
+          nomePesquisa.length > 22 ? 7.5 : nomePesquisa.length > 16 ? 8.5 : 10;
+        const pillTextY = CY + 4 + (24 - pillFontSize * 1.15) / 2;
         doc.roundedRect(pillX, CY + 4, pillW, 24, 12).fill(RED);
         doc
           .fillColor(WHITE)
           .font("Helvetica-Bold")
-          .fontSize(10)
-          .text(tema.toUpperCase(), pillX, CY + 11, {
+          .fontSize(pillFontSize)
+          .text(nomePesquisa.toUpperCase(), pillX, pillTextY, {
             width: pillW,
             align: "center",
+            lineBreak: false,
           });
 
         // ── Texto institucional ───────────────────────────
@@ -744,25 +733,35 @@ export class OficiosService {
           modelo.textoInstitucional ||
           `Prezado(a) cidadão(ã),\n\nO Instituto Prisma da Bahia está realizando uma Pesquisa de Opinião Pública com o objetivo de compreender a percepção da população sobre os serviços prestados no município de ${municipioNome}–${municipioEstado}.\n\nSua participação é voluntária, anônima e de grande importância para a produção de informações confiáveis que contribuam para estudos, análises e avaliações da opinião da população.`;
 
+        const textStartY = CY + 44;
+        const textMaxY = 416; // limite antes do card de garantias (y=428)
+
         doc
           .fillColor(DGRAY)
           .font("Helvetica")
           .fontSize(9)
-          .text(bodyText, LX, CY + 44, {
+          .text(bodyText, LX, textStartY, {
             width: LW,
             align: "justify",
             lineGap: 2,
           });
-        doc
-          .fillColor(DGRAY)
-          .font("Helvetica")
-          .fontSize(9)
-          .text(
-            "Sua colaboração fortalece a qualidade das pesquisas e contribui para uma compreensão mais precisa da realidade do município.",
-            LX,
-            406,
-            { width: LW, align: "justify", lineGap: 2 },
-          );
+
+        // Parágrafo de encerramento — posicionado dinamicamente após o corpo
+        // e exibido apenas se houver espaço disponível
+        const closingText =
+          "Sua colaboração fortalece a qualidade das pesquisas e contribui para uma compreensão mais precisa da realidade do município.";
+        const closingY = doc.y + 6;
+        if (closingY + 30 <= textMaxY) {
+          doc
+            .fillColor(DGRAY)
+            .font("Helvetica")
+            .fontSize(9)
+            .text(closingText, LX, closingY, {
+              width: LW,
+              align: "justify",
+              lineGap: 2,
+            });
+        }
 
         // ── Card de Garantias ─────────────────────────────
         const gY = 428,
@@ -780,31 +779,35 @@ export class OficiosService {
             align: "center",
           });
 
-        const guarantees: { text: string; iconFn: IconFn; color: string }[] = [
-          { text: "Participação voluntária", iconFn: iconPerson, color: BLUE },
-          { text: "Respostas anônimas", iconFn: iconShield, color: BLUE },
+        const guarantees: { text: string; iconFn: IconFn }[] = [
+          { text: "Participação voluntária", iconFn: iconPerson },
+          { text: "Respostas anônimas", iconFn: iconShield },
           {
             text: "Nenhum CPF ou documento é solicitado",
             iconFn: iconDocument,
-            color: BLUE,
           },
           {
             text: "Resultado apresentado apenas de forma coletiva",
             iconFn: iconChart,
-            color: BLUE,
           },
-          { text: "Tempo médio: 2 minutos", iconFn: iconClock, color: BLUE },
+          { text: "Tempo médio: 2 minutos", iconFn: iconClock },
         ];
 
         let gy2 = gY + 40;
         for (let gi = 0; gi < guarantees.length; gi++) {
-          const g = guarantees[gi];
-          drawCircleIcon(doc, LX + 18, gy2 + 10, 12, g.color, g.iconFn);
+          drawCircleIcon(
+            doc,
+            LX + 18,
+            gy2 + 10,
+            12,
+            BLUE,
+            guarantees[gi].iconFn,
+          );
           doc
             .fillColor(DGRAY)
             .font("Helvetica")
             .fontSize(8.5)
-            .text(g.text, LX + 36, gy2 + 5);
+            .text(guarantees[gi].text, LX + 36, gy2 + 5);
           if (gi < guarantees.length - 1) {
             drawDashedLine(doc, LX + 36, gy2 + 26, LX + LW - 10, "#cccccc");
           }
@@ -835,7 +838,6 @@ export class OficiosService {
             { width: 196, lineGap: 1 },
           );
 
-        // Moldura do QR
         const qrFX = RX + 12,
           qrFY = CY + 76,
           qrSZ = 222;
@@ -913,7 +915,6 @@ export class OficiosService {
             align: "center",
             characterSpacing: 5,
           });
-
         drawCircleIcon(doc, RX + 20, acY + 113, 9, BLUE, iconGlobe);
         doc
           .fillColor(MGRAY)
@@ -934,6 +935,7 @@ export class OficiosService {
         doc.rect(40, ibY, 515, ibH).fill(WHITE);
         doc.rect(40, ibY, 515, ibH).strokeColor(BGRAY).lineWidth(1).stroke();
 
+        // TEMA: exibe o NOME da pesquisa; cor/ícone baseados no tipo
         const infoSecs = [
           {
             label: "LOCAL DA PESQUISA",
@@ -944,7 +946,7 @@ export class OficiosService {
           },
           {
             label: "TEMA",
-            value: tema,
+            value: nomePesquisa,
             color: topicInfo.color,
             iconFn: topicInfo.iconFn,
             vColor: topicInfo.color,
@@ -982,10 +984,13 @@ export class OficiosService {
             .font("Helvetica")
             .fontSize(6.5)
             .text(sec.label, sx + 44, ibY + 11);
+
+          // Tamanho de fonte adaptável para nomes longos na barra
+          const vFont = sec.value.length > 22 ? 7 : 8.5;
           doc
             .fillColor(sec.vColor)
             .font("Helvetica-Bold")
-            .fontSize(8.5)
+            .fontSize(vFont)
             .text(sec.value, sx + 44, ibY + 23, { width: secW - 54 });
         });
 
@@ -1123,7 +1128,6 @@ export class OficiosService {
 
       let y = 85;
       const ROW_H = 20;
-
       doc.rect(40, y, 515, ROW_H).fill("#E8EFF7");
       doc.fillColor(PRIMARY).font("Helvetica-Bold").fontSize(8);
       doc.text("TOKEN", 50, y + 6);
