@@ -412,57 +412,47 @@ interface TopicInfo {
   iconFn: IconFn;
 }
 
-const TOPIC_MAP: Record<string, TopicInfo> = {
-  Saúde: { color: "#e74c3c", iconFn: iconHeart },
-  Saude: { color: "#e74c3c", iconFn: iconHeart },
-  Educação: { color: "#1976d2", iconFn: iconDocument },
-  Educacao: { color: "#1976d2", iconFn: iconDocument },
-  "Segurança Pública": { color: "#6a1fa2", iconFn: iconShield },
-  "Seguranca Publica": { color: "#6a1fa2", iconFn: iconShield },
-  Infraestrutura: { color: "#e67e22", iconFn: iconBuilding },
-  Mobilidade: { color: "#00897b", iconFn: iconChart },
-  Transporte: { color: "#00897b", iconFn: iconChart },
-  Agricultura: { color: "#388e3c", iconFn: iconHeart },
-  "Assistência Social": { color: "#c2185b", iconFn: iconPerson },
-  "Assistencia Social": { color: "#c2185b", iconFn: iconPerson },
-  Esporte: { color: "#f57c00", iconFn: iconChart },
-  Cultura: { color: "#7b1fa2", iconFn: iconBuilding },
-  Turismo: { color: "#0288d1", iconFn: iconBuilding },
-  "Meio Ambiente": { color: "#2e7d32", iconFn: iconHeart },
-  Habitação: { color: "#5d4037", iconFn: iconBuilding },
-  Habitacao: { color: "#5d4037", iconFn: iconBuilding },
-  "Limpeza Pública": { color: "#546e7a", iconFn: iconChart },
-  "Limpeza Publica": { color: "#546e7a", iconFn: iconChart },
-  "Iluminação Pública": { color: "#f9a825", iconFn: iconChart },
-  "Iluminacao Publica": { color: "#f9a825", iconFn: iconChart },
-  "Abastecimento de Água": { color: "#0288d1", iconFn: iconGlobe },
-  "Abastecimento de Agua": { color: "#0288d1", iconFn: iconGlobe },
-  Emprego: { color: "#388e3c", iconFn: iconPerson },
-  Economia: { color: "#1565c0", iconFn: iconChart },
-  "Administração Pública": { color: "#37474f", iconFn: iconBuilding },
-  "Administracao Publica": { color: "#37474f", iconFn: iconBuilding },
-  "Avaliação da Gestão": { color: NAVY, iconFn: iconBuilding },
-  "Avaliacao da Gestao": { color: NAVY, iconFn: iconBuilding },
-  Eleitoral: { color: NAVY, iconFn: iconBuilding },
-  "Pesquisa Eleitoral": { color: NAVY, iconFn: iconBuilding },
-  "Opinião Pública": { color: BLUE, iconFn: iconPerson },
-  "Opiniao Publica": { color: BLUE, iconFn: iconPerson },
-  "Pesquisa Política": { color: "#4a148c", iconFn: iconBuilding },
-  "Pesquisa Politica": { color: "#4a148c", iconFn: iconBuilding },
-  "Pesquisa Institucional": { color: NAVY, iconFn: iconBuilding },
-  Satisfação: { color: "#f57c00", iconFn: iconHeart },
-  Satisfacao: { color: "#f57c00", iconFn: iconHeart },
-  Temática: { color: BLUE, iconFn: iconChart },
-  Tematica: { color: BLUE, iconFn: iconChart },
-};
+const TOPIC_MAP: Record<string, TopicInfo> = {};
 
 function getTopicInfo(tipo: string): TopicInfo {
-  return TOPIC_MAP[tipo] || { color: NAVY, iconFn: iconChart };
+  return { color: NAVY, iconFn: iconClipboard };
 }
 
 // ════════════════════════════════════════════════════════════════════════════
 // HELPERS DE LAYOUT
 // ════════════════════════════════════════════════════════════════════════════
+
+function iconClipboard(
+  doc: any,
+  cx: number,
+  cy: number,
+  s: number,
+  bg: string,
+): void {
+  // Prancheta
+  doc
+    .roundedRect(cx - s * 0.55, cy - s * 0.55, s * 1.1, s * 1.35, s * 0.12)
+    .fill(WHITE);
+
+  // Presilha superior
+  doc
+    .roundedRect(cx - s * 0.25, cy - s * 0.82, s * 0.5, s * 0.28, s * 0.08)
+    .fill(bg);
+
+  // Linhas simulando perguntas
+  for (let i = 0; i < 3; i++) {
+    const y = cy - s * 0.2 + i * s * 0.32;
+
+    doc.circle(cx - s * 0.28, y, s * 0.05).fill(bg);
+
+    doc
+      .moveTo(cx - s * 0.12, y)
+      .lineTo(cx + s * 0.28, y)
+      .strokeColor(bg)
+      .lineWidth(s * 0.08)
+      .stroke();
+  }
+}
 
 function drawCircleIcon(
   doc: any,
