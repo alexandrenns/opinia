@@ -10,7 +10,7 @@ import { Lote } from "../tokens/lote.entity";
 import { Pesquisa } from "../pesquisas/pesquisa.entity";
 import { ConfiguracaoSistema } from "../configuracao/configuracao-sistema.entity";
 
-// ── PALETA DE CORES ──────────────────────────────────────────────────────────
+// ── CORES ────────────────────────────────────────────────────────────────────
 const NAVY = "#0a2855";
 const BLUE = "#1a5cb8";
 const RED = "#c0392b";
@@ -20,88 +20,477 @@ const DGRAY = "#333333";
 const MGRAY = "#777777";
 const BGRAY = "#dde3ec";
 
-// ── MAPEAMENTO CENTRALIZADO DE ÍCONES POR TEMA ───────────────────────────────
-const TOPIC_MAP: Record<string, { abbr: string; color: string }> = {
-  Saúde: { abbr: "+", color: "#e74c3c" },
-  Saude: { abbr: "+", color: "#e74c3c" },
-  Educação: { abbr: "E", color: "#1976d2" },
-  Educacao: { abbr: "E", color: "#1976d2" },
-  "Segurança Pública": { abbr: "SP", color: "#6a1fa2" },
-  "Seguranca Publica": { abbr: "SP", color: "#6a1fa2" },
-  Infraestrutura: { abbr: "I", color: "#e67e22" },
-  Mobilidade: { abbr: "M", color: "#00897b" },
-  Transporte: { abbr: "TR", color: "#00897b" },
-  Agricultura: { abbr: "AG", color: "#388e3c" },
-  "Assistência Social": { abbr: "AS", color: "#c2185b" },
-  "Assistencia Social": { abbr: "AS", color: "#c2185b" },
-  Esporte: { abbr: "ES", color: "#f57c00" },
-  Cultura: { abbr: "C", color: "#7b1fa2" },
-  Turismo: { abbr: "TU", color: "#0288d1" },
-  "Meio Ambiente": { abbr: "MA", color: "#2e7d32" },
-  Habitação: { abbr: "H", color: "#5d4037" },
-  Habitacao: { abbr: "H", color: "#5d4037" },
-  "Limpeza Pública": { abbr: "LP", color: "#546e7a" },
-  "Limpeza Publica": { abbr: "LP", color: "#546e7a" },
-  "Iluminação Pública": { abbr: "IL", color: "#f9a825" },
-  "Iluminacao Publica": { abbr: "IL", color: "#f9a825" },
-  "Abastecimento de Água": { abbr: "AA", color: "#0288d1" },
-  "Abastecimento de Agua": { abbr: "AA", color: "#0288d1" },
-  Emprego: { abbr: "EM", color: "#388e3c" },
-  Economia: { abbr: "EC", color: "#1565c0" },
-  "Administração Pública": { abbr: "AP", color: "#37474f" },
-  "Administracao Publica": { abbr: "AP", color: "#37474f" },
-  "Avaliação da Gestão": { abbr: "G", color: NAVY },
-  "Avaliacao da Gestao": { abbr: "G", color: NAVY },
-  Eleitoral: { abbr: "EL", color: NAVY },
-  "Pesquisa Eleitoral": { abbr: "EL", color: NAVY },
-  "Opinião Pública": { abbr: "OP", color: BLUE },
-  "Opiniao Publica": { abbr: "OP", color: BLUE },
-  "Pesquisa Política": { abbr: "PP", color: "#4a148c" },
-  "Pesquisa Politica": { abbr: "PP", color: "#4a148c" },
-  "Pesquisa Institucional": { abbr: "PI", color: NAVY },
-  Satisfação: { abbr: "SF", color: "#f57c00" },
-  Satisfacao: { abbr: "SF", color: "#f57c00" },
-  Temática: { abbr: "TM", color: BLUE },
-  Tematica: { abbr: "TM", color: BLUE },
-};
+// ════════════════════════════════════════════════════════════════════════════
+// FUNÇÕES DE ÍCONE
+// Cada função desenha um ícone BRANCO sobre um fundo colorido já existente.
+// Parâmetros: doc, cx/cy = centro, s = metade do tamanho utilizável, bg = cor do fundo
+// ════════════════════════════════════════════════════════════════════════════
+type IconFn = (doc: any, cx: number, cy: number, s: number, bg: string) => void;
 
-function getTopicInfo(tipo: string): { abbr: string; color: string } {
-  return TOPIC_MAP[tipo] || { abbr: "P", color: NAVY };
+/** Silhueta de pessoa */
+function iconPerson(
+  doc: any,
+  cx: number,
+  cy: number,
+  s: number,
+  _bg: string,
+): void {
+  doc.circle(cx, cy - s * 0.26, s * 0.32).fill(WHITE);
+  doc
+    .moveTo(cx - s * 0.56, cy + s * 0.78)
+    .bezierCurveTo(
+      cx - s * 0.56,
+      cy + s * 0.18,
+      cx + s * 0.56,
+      cy + s * 0.18,
+      cx + s * 0.56,
+      cy + s * 0.78,
+    )
+    .closePath()
+    .fill(WHITE);
 }
 
-// ── HELPERS ───────────────────────────────────────────────────────────────────
+/** Escudo com marca de verificação */
+function iconShield(
+  doc: any,
+  cx: number,
+  cy: number,
+  s: number,
+  bg: string,
+): void {
+  doc
+    .moveTo(cx, cy - s * 0.92)
+    .lineTo(cx + s * 0.72, cy - s * 0.32)
+    .lineTo(cx + s * 0.72, cy + s * 0.18)
+    .bezierCurveTo(
+      cx + s * 0.72,
+      cy + s * 0.68,
+      cx,
+      cy + s * 0.96,
+      cx,
+      cy + s * 0.96,
+    )
+    .bezierCurveTo(
+      cx - s * 0.72,
+      cy + s * 0.68,
+      cx - s * 0.72,
+      cy + s * 0.18,
+      cx - s * 0.72,
+      cy + s * 0.18,
+    )
+    .lineTo(cx - s * 0.72, cy - s * 0.32)
+    .closePath()
+    .fill(WHITE);
+  doc
+    .moveTo(cx - s * 0.3, cy + s * 0.18)
+    .lineTo(cx - s * 0.02, cy + s * 0.48)
+    .lineTo(cx + s * 0.4, cy - s * 0.12)
+    .strokeColor(bg)
+    .lineWidth(s * 0.2)
+    .lineJoin("round")
+    .lineCap("round")
+    .stroke();
+}
 
-/**
- * Círculo preenchido com letra centralizada.
- * O texto é posicionado manualmente usando as dimensões do círculo.
- */
-function drawIconCircle(
+/** Documento / ficha com linhas */
+function iconDocument(
+  doc: any,
+  cx: number,
+  cy: number,
+  s: number,
+  bg: string,
+): void {
+  const w = s * 1.06,
+    h = s * 1.32;
+  doc.roundedRect(cx - w / 2, cy - h / 2, w, h, s * 0.1).fill(WHITE);
+  for (let i = 0; i < 3; i++) {
+    const lw = i === 2 ? w * 0.54 : w * 0.76;
+    const ly = cy - h * 0.16 + i * s * 0.37;
+    doc.rect(cx - lw / 2, ly, lw, s * 0.1).fill(bg);
+  }
+}
+
+/** Gráfico de barras */
+function iconChart(
+  doc: any,
+  cx: number,
+  cy: number,
+  s: number,
+  _bg: string,
+): void {
+  const bW = s * 0.28,
+    base = cy + s * 0.5;
+  [
+    { ox: -0.53, h: 0.52 },
+    { ox: -0.14, h: 0.86 },
+    { ox: 0.24, h: 0.65 },
+  ].forEach((b) => {
+    doc.rect(cx + b.ox * s, base - b.h * s, bW, b.h * s).fill(WHITE);
+  });
+  doc
+    .moveTo(cx - s * 0.65, base + s * 0.04)
+    .lineTo(cx + s * 0.65, base + s * 0.04)
+    .strokeColor(WHITE)
+    .lineWidth(s * 0.1)
+    .stroke();
+}
+
+/** Relógio */
+function iconClock(
+  doc: any,
+  cx: number,
+  cy: number,
+  s: number,
+  _bg: string,
+): void {
+  doc
+    .circle(cx, cy, s * 0.9)
+    .strokeColor(WHITE)
+    .lineWidth(s * 0.14)
+    .stroke();
+  doc
+    .moveTo(cx, cy)
+    .lineTo(cx - s * 0.3, cy - s * 0.5)
+    .strokeColor(WHITE)
+    .lineWidth(s * 0.15)
+    .lineCap("round")
+    .stroke();
+  doc
+    .moveTo(cx, cy)
+    .lineTo(cx + s * 0.52, cy)
+    .strokeColor(WHITE)
+    .lineWidth(s * 0.12)
+    .lineCap("round")
+    .stroke();
+  doc.circle(cx, cy, s * 0.1).fill(WHITE);
+}
+
+/** Alfinete de localização */
+function iconPin(
+  doc: any,
+  cx: number,
+  cy: number,
+  s: number,
+  bg: string,
+): void {
+  doc.circle(cx, cy - s * 0.22, s * 0.6).fill(WHITE);
+  doc
+    .moveTo(cx - s * 0.46, cy - s * 0.04)
+    .lineTo(cx, cy + s * 0.9)
+    .lineTo(cx + s * 0.46, cy - s * 0.04)
+    .closePath()
+    .fill(WHITE);
+  doc.circle(cx, cy - s * 0.22, s * 0.27).fill(bg);
+}
+
+/** Coração com linha de pulso */
+function iconHeart(
+  doc: any,
+  cx: number,
+  cy: number,
+  s: number,
+  bg: string,
+): void {
+  doc
+    .moveTo(cx, cy + s * 0.64)
+    .bezierCurveTo(
+      cx - s * 0.08,
+      cy + s * 0.4,
+      cx - s,
+      cy + s * 0.1,
+      cx - s,
+      cy - s * 0.28,
+    )
+    .bezierCurveTo(
+      cx - s,
+      cy - s * 0.78,
+      cx - s * 0.5,
+      cy - s,
+      cx,
+      cy - s * 0.46,
+    )
+    .bezierCurveTo(
+      cx + s * 0.5,
+      cy - s,
+      cx + s,
+      cy - s * 0.78,
+      cx + s,
+      cy - s * 0.28,
+    )
+    .bezierCurveTo(
+      cx + s,
+      cy + s * 0.1,
+      cx + s * 0.08,
+      cy + s * 0.4,
+      cx,
+      cy + s * 0.64,
+    )
+    .closePath()
+    .fill(WHITE);
+  doc
+    .moveTo(cx - s * 0.72, cy + s * 0.06)
+    .lineTo(cx - s * 0.36, cy + s * 0.06)
+    .lineTo(cx - s * 0.18, cy - s * 0.44)
+    .lineTo(cx, cy + s * 0.44)
+    .lineTo(cx + s * 0.18, cy + s * 0.06)
+    .lineTo(cx + s * 0.72, cy + s * 0.06)
+    .strokeColor(bg)
+    .lineWidth(s * 0.14)
+    .lineJoin("round")
+    .lineCap("round")
+    .stroke();
+}
+
+/** Edifício / prédio governamental */
+function iconBuilding(
+  doc: any,
+  cx: number,
+  cy: number,
+  s: number,
+  bg: string,
+): void {
+  doc
+    .moveTo(cx - s * 0.94, cy - s * 0.06)
+    .lineTo(cx, cy - s * 0.84)
+    .lineTo(cx + s * 0.94, cy - s * 0.06)
+    .closePath()
+    .fill(WHITE);
+  doc.rect(cx - s * 0.84, cy - s * 0.06, s * 1.68, s * 0.84).fill(WHITE);
+  [-0.56, -0.18, 0.18, 0.56].forEach((ox) => {
+    doc.rect(cx + ox * s - s * 0.1, cy - s * 0.02, s * 0.18, s * 0.72).fill(bg);
+  });
+}
+
+/** Cadeado */
+function iconLock(
+  doc: any,
+  cx: number,
+  cy: number,
+  s: number,
+  bg: string,
+): void {
+  doc
+    .roundedRect(cx - s * 0.64, cy - s * 0.06, s * 1.28, s * 0.92, s * 0.14)
+    .fill(WHITE);
+  doc
+    .moveTo(cx - s * 0.36, cy - s * 0.06)
+    .lineTo(cx - s * 0.36, cy - s * 0.48)
+    .bezierCurveTo(
+      cx - s * 0.36,
+      cy - s,
+      cx + s * 0.36,
+      cy - s,
+      cx + s * 0.36,
+      cy - s * 0.48,
+    )
+    .lineTo(cx + s * 0.36, cy - s * 0.06)
+    .strokeColor(WHITE)
+    .lineWidth(s * 0.26)
+    .lineJoin("round")
+    .stroke();
+  doc.circle(cx, cy + s * 0.3, s * 0.2).fill(bg);
+}
+
+/** Globo / web */
+function iconGlobe(
+  doc: any,
+  cx: number,
+  cy: number,
+  s: number,
+  _bg: string,
+): void {
+  doc
+    .circle(cx, cy, s * 0.9)
+    .strokeColor(WHITE)
+    .lineWidth(s * 0.13)
+    .stroke();
+  doc
+    .moveTo(cx - s * 0.9, cy)
+    .lineTo(cx + s * 0.9, cy)
+    .strokeColor(WHITE)
+    .lineWidth(s * 0.1)
+    .stroke();
+  doc
+    .moveTo(cx, cy - s * 0.9)
+    .lineTo(cx, cy + s * 0.9)
+    .strokeColor(WHITE)
+    .lineWidth(s * 0.1)
+    .stroke();
+  doc
+    .moveTo(cx, cy - s * 0.9)
+    .bezierCurveTo(
+      cx + s * 0.48,
+      cy - s * 0.44,
+      cx + s * 0.48,
+      cy + s * 0.44,
+      cx,
+      cy + s * 0.9,
+    )
+    .strokeColor(WHITE)
+    .lineWidth(s * 0.1)
+    .stroke();
+  doc
+    .moveTo(cx, cy - s * 0.9)
+    .bezierCurveTo(
+      cx - s * 0.48,
+      cy - s * 0.44,
+      cx - s * 0.48,
+      cy + s * 0.44,
+      cx,
+      cy + s * 0.9,
+    )
+    .strokeColor(WHITE)
+    .lineWidth(s * 0.1)
+    .stroke();
+}
+
+/** Envelope / e-mail */
+function iconEnvelope(
+  doc: any,
+  cx: number,
+  cy: number,
+  s: number,
+  _bg: string,
+): void {
+  const w = s * 1.66,
+    h = s * 1.16;
+  doc
+    .roundedRect(cx - w / 2, cy - h / 2, w, h, s * 0.1)
+    .strokeColor(WHITE)
+    .lineWidth(s * 0.12)
+    .stroke();
+  doc
+    .moveTo(cx - w / 2, cy - h / 2)
+    .lineTo(cx, cy + s * 0.08)
+    .lineTo(cx + w / 2, cy - h / 2)
+    .strokeColor(WHITE)
+    .lineWidth(s * 0.12)
+    .stroke();
+}
+
+/** Câmera / Instagram simplificado */
+function iconCamera(
+  doc: any,
+  cx: number,
+  cy: number,
+  s: number,
+  _bg: string,
+): void {
+  const r = s * 0.88;
+  doc
+    .roundedRect(cx - r, cy - r * 0.78, r * 2, r * 1.56, r * 0.35)
+    .strokeColor(WHITE)
+    .lineWidth(s * 0.13)
+    .stroke();
+  doc
+    .circle(cx, cy + r * 0.06, r * 0.52)
+    .strokeColor(WHITE)
+    .lineWidth(s * 0.12)
+    .stroke();
+  doc
+    .roundedRect(cx + r * 0.35, cy - r * 0.76, r * 0.4, r * 0.3, r * 0.06)
+    .fill(WHITE);
+}
+
+/** Smartphone (para instrução do QR) */
+function iconPhone(
+  doc: any,
+  cx: number,
+  cy: number,
+  s: number,
+  _bg: string,
+): void {
+  const w = s * 0.7,
+    h = s * 1.18;
+  doc
+    .roundedRect(cx - w / 2, cy - h / 2, w, h, s * 0.18)
+    .strokeColor(WHITE)
+    .lineWidth(s * 0.14)
+    .stroke();
+  doc
+    .moveTo(cx - w * 0.3, cy - h / 2 + s * 0.05)
+    .lineTo(cx + w * 0.3, cy - h / 2 + s * 0.05)
+    .strokeColor(WHITE)
+    .lineWidth(s * 0.1)
+    .stroke();
+  doc.circle(cx, cy + h / 2 - s * 0.14, s * 0.11).fill(WHITE);
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// MAPEAMENTO DE TEMAS → cor + ícone
+// Para adicionar temas: insira uma entrada aqui.
+// ════════════════════════════════════════════════════════════════════════════
+interface TopicInfo {
+  color: string;
+  iconFn: IconFn;
+}
+
+const TOPIC_MAP: Record<string, TopicInfo> = {
+  Saúde: { color: "#e74c3c", iconFn: iconHeart },
+  Saude: { color: "#e74c3c", iconFn: iconHeart },
+  Educação: { color: "#1976d2", iconFn: iconDocument },
+  Educacao: { color: "#1976d2", iconFn: iconDocument },
+  "Segurança Pública": { color: "#6a1fa2", iconFn: iconShield },
+  "Seguranca Publica": { color: "#6a1fa2", iconFn: iconShield },
+  Infraestrutura: { color: "#e67e22", iconFn: iconBuilding },
+  Mobilidade: { color: "#00897b", iconFn: iconChart },
+  Transporte: { color: "#00897b", iconFn: iconChart },
+  Agricultura: { color: "#388e3c", iconFn: iconHeart },
+  "Assistência Social": { color: "#c2185b", iconFn: iconPerson },
+  "Assistencia Social": { color: "#c2185b", iconFn: iconPerson },
+  Esporte: { color: "#f57c00", iconFn: iconChart },
+  Cultura: { color: "#7b1fa2", iconFn: iconBuilding },
+  Turismo: { color: "#0288d1", iconFn: iconBuilding },
+  "Meio Ambiente": { color: "#2e7d32", iconFn: iconHeart },
+  Habitação: { color: "#5d4037", iconFn: iconBuilding },
+  Habitacao: { color: "#5d4037", iconFn: iconBuilding },
+  "Limpeza Pública": { color: "#546e7a", iconFn: iconChart },
+  "Limpeza Publica": { color: "#546e7a", iconFn: iconChart },
+  "Iluminação Pública": { color: "#f9a825", iconFn: iconChart },
+  "Iluminacao Publica": { color: "#f9a825", iconFn: iconChart },
+  "Abastecimento de Água": { color: "#0288d1", iconFn: iconGlobe },
+  "Abastecimento de Agua": { color: "#0288d1", iconFn: iconGlobe },
+  Emprego: { color: "#388e3c", iconFn: iconPerson },
+  Economia: { color: "#1565c0", iconFn: iconChart },
+  "Administração Pública": { color: "#37474f", iconFn: iconBuilding },
+  "Administracao Publica": { color: "#37474f", iconFn: iconBuilding },
+  "Avaliação da Gestão": { color: NAVY, iconFn: iconBuilding },
+  "Avaliacao da Gestao": { color: NAVY, iconFn: iconBuilding },
+  Eleitoral: { color: NAVY, iconFn: iconBuilding },
+  "Pesquisa Eleitoral": { color: NAVY, iconFn: iconBuilding },
+  "Opinião Pública": { color: BLUE, iconFn: iconPerson },
+  "Opiniao Publica": { color: BLUE, iconFn: iconPerson },
+  "Pesquisa Política": { color: "#4a148c", iconFn: iconBuilding },
+  "Pesquisa Politica": { color: "#4a148c", iconFn: iconBuilding },
+  "Pesquisa Institucional": { color: NAVY, iconFn: iconBuilding },
+  Satisfação: { color: "#f57c00", iconFn: iconHeart },
+  Satisfacao: { color: "#f57c00", iconFn: iconHeart },
+  Temática: { color: BLUE, iconFn: iconChart },
+  Tematica: { color: BLUE, iconFn: iconChart },
+};
+
+function getTopicInfo(tipo: string): TopicInfo {
+  return TOPIC_MAP[tipo] || { color: NAVY, iconFn: iconChart };
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// HELPERS DE LAYOUT
+// ════════════════════════════════════════════════════════════════════════════
+
+/** Desenha círculo preenchido + chama a função de ícone dentro dele */
+function drawCircleIcon(
   doc: any,
   cx: number,
   cy: number,
   r: number,
   bgColor: string,
-  label: string,
-  fontSize: number,
+  iconFn: IconFn,
 ): void {
-  // Círculo
   doc.circle(cx, cy, r).fill(bgColor);
-  // Texto centrado: y = centro do círculo menos metade da altura da fonte
-  const ty = cy - fontSize * 0.72;
-  doc
-    .fillColor(WHITE)
-    .font("Helvetica-Bold")
-    .fontSize(fontSize)
-    .text(label, cx - r, ty, {
-      width: r * 2,
-      align: "center",
-      lineBreak: false,
-    });
+  iconFn(doc, cx, cy, r * 0.62, bgColor);
 }
 
-/**
- * Linha tracejada por segmentos (compatível com qualquer versão do PDFKit).
- */
+/** Linha tracejada por segmentos (compatível com qualquer versão do PDFKit) */
 function drawDashedLine(
   doc: any,
   x1: number,
@@ -113,13 +502,19 @@ function drawDashedLine(
     gap = 4;
   let x = x1;
   while (x < x2) {
-    const end = Math.min(x + dash, x2);
-    doc.moveTo(x, y).lineTo(end, y).strokeColor(color).lineWidth(0.5).stroke();
+    doc
+      .moveTo(x, y)
+      .lineTo(Math.min(x + dash, x2), y)
+      .strokeColor(color)
+      .lineWidth(0.5)
+      .stroke();
     x += dash + gap;
   }
 }
 
-// ── SERVICE ───────────────────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════════════════════
+// SERVICE
+// ════════════════════════════════════════════════════════════════════════════
 
 @Injectable()
 export class OficiosService {
@@ -220,18 +615,15 @@ export class OficiosService {
         // 1. CABEÇALHO  (Y: 0 → 112)
         // ════════════════════════════════════════════════════
         doc.rect(0, 0, 595, 112).fill(WHITE);
-        // Barra lateral esquerda
-        doc.rect(0, 0, 5, 112).fill(NAVY);
+        doc.rect(0, 0, 5, 112).fill(NAVY); // barra lateral
 
-        // Logo do Instituto
         if (logoPath) {
           doc.image(logoPath, 14, 15, { width: 78, height: 78 });
         }
 
-        // Zona do brasão: reserva os últimos 135pt à direita
-        const sepX = 460; // x do separador
+        const sepX = 460;
         const textX = logoPath ? 103 : 42;
-        const textW = sepX - textX - 8; // largura do bloco de texto
+        const textW = sepX - textX - 10;
 
         doc
           .fillColor(NAVY)
@@ -263,20 +655,17 @@ export class OficiosService {
             { width: textW },
           );
 
-        // Brasão — centralizado no espaço à direita do separador
+        // Brasão centrado na zona direita
         if (brasaoExiste) {
-          // Separador sutil
           doc
             .moveTo(sepX, 14)
             .lineTo(sepX, 98)
             .strokeColor("#e0e0e0")
             .lineWidth(0.8)
             .stroke();
-
-          const rightZoneW = 595 - sepX; // 135pt
           const bW = 70;
-          const bX = sepX + (rightZoneW - bW) / 2; // centro horizontal
-          const bY = (112 - bW) / 2; // centro vertical
+          const bX = sepX + (595 - sepX - bW) / 2;
+          const bY = (112 - bW) / 2;
           doc.image(brasaoPath!, bX, bY, { width: bW, height: bW });
         }
 
@@ -289,8 +678,6 @@ export class OficiosService {
         // 3. FAIXA DE TÍTULO  (Y: 115 → 188)
         // ════════════════════════════════════════════════════
         doc.rect(0, 115, 595, 73).fill(NAVY);
-
-        // Faixas diagonais decorativas
         doc
           .moveTo(430, 115)
           .lineTo(595, 115)
@@ -305,7 +692,6 @@ export class OficiosService {
           .lineTo(567, 188)
           .closePath()
           .fill(RED);
-
         doc
           .fillColor("#b8cde8")
           .font("Helvetica")
@@ -321,8 +707,8 @@ export class OficiosService {
 
         // ════════════════════════════════════════════════════
         // 4. CONTEÚDO  (Y: 196 → 646)
-        // Coluna esquerda x=40  w=252
-        // Coluna direita  x=307 w=248
+        //    Coluna esquerda  x=40  w=252
+        //    Coluna direita   x=307 w=248
         // ════════════════════════════════════════════════════
         const LX = 40,
           LW = 252;
@@ -341,7 +727,6 @@ export class OficiosService {
           .font("Helvetica-Bold")
           .fontSize(8.5)
           .text("PESQUISA:", LX + 10, CY + 11);
-
         const pillX = LX + 82,
           pillW = LW - 92;
         doc.roundedRect(pillX, CY + 4, pillW, 24, 12).fill(RED);
@@ -368,7 +753,6 @@ export class OficiosService {
             align: "justify",
             lineGap: 2,
           });
-
         doc
           .fillColor(DGRAY)
           .font("Helvetica")
@@ -383,13 +767,9 @@ export class OficiosService {
         // ── Card de Garantias ─────────────────────────────
         const gY = 428,
           gH = 218;
-
-        // Sombra sutil
         doc.rect(LX + 2, gY + 2, LW, gH).fill("#e0e6f0");
-        // Card
         doc.rect(LX, gY, LW, gH).fill(WHITE);
         doc.rect(LX, gY, LW, gH).strokeColor(BGRAY).lineWidth(1).stroke();
-        // Cabeçalho do card
         doc.rect(LX, gY, LW, 28).fill(NAVY);
         doc
           .fillColor(WHITE)
@@ -400,27 +780,26 @@ export class OficiosService {
             align: "center",
           });
 
-        // Itens — ícones em navy com letra branca
-        const guarantees = [
-          { text: "Participação voluntária", letter: "P", color: NAVY },
-          { text: "Respostas anônimas", letter: "S", color: NAVY },
+        const guarantees: { text: string; iconFn: IconFn; color: string }[] = [
+          { text: "Participação voluntária", iconFn: iconPerson, color: BLUE },
+          { text: "Respostas anônimas", iconFn: iconShield, color: BLUE },
           {
             text: "Nenhum CPF ou documento é solicitado",
-            letter: "D",
-            color: NAVY,
+            iconFn: iconDocument,
+            color: BLUE,
           },
           {
             text: "Resultado apresentado apenas de forma coletiva",
-            letter: "R",
-            color: NAVY,
+            iconFn: iconChart,
+            color: BLUE,
           },
-          { text: "Tempo médio: 2 minutos", letter: "T", color: BLUE },
+          { text: "Tempo médio: 2 minutos", iconFn: iconClock, color: BLUE },
         ];
 
         let gy2 = gY + 40;
         for (let gi = 0; gi < guarantees.length; gi++) {
           const g = guarantees[gi];
-          drawIconCircle(doc, LX + 18, gy2 + 10, 12, g.color, g.letter, 7.5);
+          drawCircleIcon(doc, LX + 18, gy2 + 10, 12, g.color, g.iconFn);
           doc
             .fillColor(DGRAY)
             .font("Helvetica")
@@ -444,8 +823,7 @@ export class OficiosService {
             align: "center",
           });
 
-        // Ícone de celular
-        drawIconCircle(doc, RX + 24, CY + 50, 16, NAVY, "QR", 7);
+        drawCircleIcon(doc, RX + 24, CY + 50, 16, BLUE, iconPhone);
         doc
           .fillColor(DGRAY)
           .font("Helvetica")
@@ -466,8 +844,6 @@ export class OficiosService {
           .strokeColor(BLUE)
           .lineWidth(2.5)
           .stroke();
-
-        // Acentos coloridos nos cantos
         const qrR = qrFX + qrSZ + 4,
           qrB = qrFY + qrSZ + 4;
         doc
@@ -495,7 +871,6 @@ export class OficiosService {
           .lineWidth(4)
           .stroke();
 
-        // QR Code (lógica original preservada)
         const qrBuffer = await QRCode.toBuffer(url, {
           errorCorrectionLevel: "H",
           width: qrSZ,
@@ -521,7 +896,6 @@ export class OficiosService {
           .font("Helvetica-Bold")
           .fontSize(7.5)
           .text("O QR CODE", RX, acY + 21, { width: RW, align: "center" });
-
         doc
           .fillColor(MGRAY)
           .font("Helvetica")
@@ -530,7 +904,6 @@ export class OficiosService {
             width: RW,
             align: "center",
           });
-
         doc
           .fillColor(DGRAY)
           .font("Helvetica-Bold")
@@ -541,8 +914,7 @@ export class OficiosService {
             characterSpacing: 5,
           });
 
-        // URL
-        drawIconCircle(doc, RX + 20, acY + 113, 9, BLUE, "W", 6);
+        drawCircleIcon(doc, RX + 20, acY + 113, 9, BLUE, iconGlobe);
         doc
           .fillColor(MGRAY)
           .font("Helvetica")
@@ -566,23 +938,23 @@ export class OficiosService {
           {
             label: "LOCAL DA PESQUISA",
             value: bairro,
-            iconColor: NAVY,
-            iconLetter: "L",
-            valueColor: DGRAY,
+            color: NAVY,
+            iconFn: iconPin,
+            vColor: DGRAY,
           },
           {
             label: "TEMA",
             value: tema,
-            iconColor: topicInfo.color,
-            iconLetter: topicInfo.abbr,
-            valueColor: topicInfo.color,
+            color: topicInfo.color,
+            iconFn: topicInfo.iconFn,
+            vColor: topicInfo.color,
           },
           {
             label: "MUNICÍPIO",
             value: `${municipioNome} – ${municipioEstado}`,
-            iconColor: NAVY,
-            iconLetter: "M",
-            valueColor: DGRAY,
+            color: NAVY,
+            iconFn: iconBuilding,
+            vColor: DGRAY,
           },
         ];
 
@@ -597,14 +969,13 @@ export class OficiosService {
               .lineWidth(1)
               .stroke();
           }
-          drawIconCircle(
+          drawCircleIcon(
             doc,
             sx + 22,
             ibY + ibH / 2,
             15,
-            sec.iconColor,
-            sec.iconLetter,
-            7,
+            sec.color,
+            sec.iconFn,
           );
           doc
             .fillColor(MGRAY)
@@ -612,7 +983,7 @@ export class OficiosService {
             .fontSize(6.5)
             .text(sec.label, sx + 44, ibY + 11);
           doc
-            .fillColor(sec.valueColor)
+            .fillColor(sec.vColor)
             .font("Helvetica-Bold")
             .fontSize(8.5)
             .text(sec.value, sx + 44, ibY + 23, { width: secW - 54 });
@@ -625,9 +996,7 @@ export class OficiosService {
           pvH = 44;
         doc.rect(40, pvY, 515, pvH).fill(LGRAY);
         doc.rect(40, pvY, 515, pvH).strokeColor(BGRAY).lineWidth(0.5).stroke();
-
-        drawIconCircle(doc, 60, pvY + pvH / 2, 14, NAVY, "S", 8);
-
+        drawCircleIcon(doc, 60, pvY + pvH / 2, 14, NAVY, iconLock);
         doc
           .fillColor(MGRAY)
           .font("Helvetica")
@@ -664,10 +1033,10 @@ export class OficiosService {
         doc.rect(0, ftY, 595, 77).fill(NAVY);
         doc.rect(0, ftY, 595, 3).fill(RED);
 
-        const footerCols = [
-          { icon: "W", text: "institutoprisma.com.br" },
-          { icon: "@", text: "contato@institutoprisma.com.br" },
-          { icon: "IG", text: "/institutoprisma" },
+        const footerCols: { iconFn: IconFn; text: string }[] = [
+          { iconFn: iconGlobe, text: "institutoprisma.com.br" },
+          { iconFn: iconEnvelope, text: "contato@institutoprisma.com.br" },
+          { iconFn: iconCamera, text: "/institutoprisma" },
         ];
         const ftColW = 595 / 3;
         footerCols.forEach((col, idx) => {
@@ -680,15 +1049,13 @@ export class OficiosService {
               .lineWidth(1)
               .stroke();
           }
-          // Círculo com cor visível sobre fundo navy
-          drawIconCircle(
+          drawCircleIcon(
             doc,
             fx + ftColW / 2 - 48,
             ftY + 38,
             10,
             BLUE,
-            col.icon,
-            6,
+            col.iconFn,
           );
           doc
             .fillColor(WHITE)
@@ -697,7 +1064,6 @@ export class OficiosService {
             .text(col.text, fx + ftColW / 2 - 32, ftY + 32, { width: 155 });
         });
 
-        // Número de página
         doc
           .fillColor("#5a8ab8")
           .font("Helvetica")
