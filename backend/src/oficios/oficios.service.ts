@@ -620,14 +620,14 @@ export class OficiosService {
           .fillColor("#4a4a6a")
           .font("Helvetica")
           .fontSize(9.5)
-          .text("Pesquisa de Opinião Pública e Afins", textX, 42, {
+          .text("Pesquisa de Opinião Pública", textX, 42, {
             width: textW,
           });
         doc
           .fillColor(RED)
           .font("Helvetica-Oblique")
           .fontSize(9)
-          .text("Transformando opiniões em conhecimento.", textX, 57, {
+          .text("Opiniões que orientam decisões.", textX, 57, {
             width: textW,
           });
         doc
@@ -709,7 +709,7 @@ export class OficiosService {
           .fillColor(NAVY)
           .font("Helvetica-Bold")
           .fontSize(8.5)
-          .text("PESQUISA:", LX + 10, CY + 11);
+          .text("TEMA:", LX + 10, CY + 11);
 
         const pillX = LX + 82,
           pillW = LW - 92;
@@ -790,7 +790,7 @@ export class OficiosService {
             text: "Resultado apresentado apenas de forma coletiva",
             iconFn: iconChart,
           },
-          { text: "Tempo médio: 2 minutos", iconFn: iconClock },
+          { text: "Tempo médio: ~2 minutos", iconFn: iconClock },
         ];
 
         let gy2 = gY + 40;
@@ -1039,9 +1039,9 @@ export class OficiosService {
         doc.rect(0, ftY, 595, 3).fill(RED);
 
         const footerCols: { iconFn: IconFn; text: string }[] = [
-          { iconFn: iconGlobe, text: "institutoprisma.com.br" },
-          { iconFn: iconEnvelope, text: "contato@institutoprisma.com.br" },
-          { iconFn: iconCamera, text: "/institutoprisma" },
+          { iconFn: iconGlobe, text: "ipba.com.br" },
+          { iconFn: iconEnvelope, text: "contato@ipba.com.br" },
+          { iconFn: iconCamera, text: "/ipba" },
         ];
         const ftColW = 595 / 3;
         footerCols.forEach((col, idx) => {
