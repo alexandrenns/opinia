@@ -1,102 +1,142 @@
 <div class="login-page">
-  <!-- Left panel - branding -->
+
+  <!-- Painel esquerdo: identidade visual ──────────────────────────────────── -->
   <div class="login-brand">
-    <div class="brand-content">
-      <div class="brand-logo">
-        <mat-icon>analytics</mat-icon>
-      </div>
-      <h1>Instituto Prisma</h1>
-      <p class="brand-tagline">
-        Confie na gente para orientar suas decisões<br />estratégicas e fornecer
-        insights valiosos sobre o mercado.
+    <div class="login-brand__grid" aria-hidden="true"></div>
+
+    <div class="login-brand__content">
+      <img src="assets/prisma-logo.png" alt="Instituto Prisma da Bahia"
+        class="login-brand__logo" />
+
+      <h1 class="login-brand__name">
+        Instituto Prisma<br><span>da Bahia</span>
+      </h1>
+
+      <p class="login-brand__tagline">
+        Transformando opiniões em conhecimento.
       </p>
 
-      <div class="brand-features">
-        <div class="feature-item">
-          <mat-icon>poll</mat-icon>
-          <span>Pesquisas de opinião profissionais</span>
-        </div>
-        <div class="feature-item">
-          <mat-icon>qr_code</mat-icon>
-          <span>Metodologia moderna</span>
-        </div>
-        <div class="feature-item">
-          <mat-icon>picture_as_pdf</mat-icon>
-          <span>Relatórios robustos</span>
-        </div>
-        <div class="feature-item">
-          <mat-icon>analytics</mat-icon>
-          <span>Resultados precisos e certificados em todo o país</span>
-        </div>
-      </div>
+      <div class="login-brand__divider" aria-hidden="true"></div>
+
+      <ul class="login-brand__features">
+        <li>
+          <span class="lbf__dot" aria-hidden="true"></span>
+          Pesquisa científica de opinião pública
+        </li>
+        <li>
+          <span class="lbf__dot" aria-hidden="true"></span>
+          Distribuição via QR Code georreferenciado
+        </li>
+        <li>
+          <span class="lbf__dot" aria-hidden="true"></span>
+          Relatórios estatísticos completos em PDF
+        </li>
+        <li>
+          <span class="lbf__dot" aria-hidden="true"></span>
+          Análise por bairro e município
+        </li>
+      </ul>
     </div>
-    <p class="brand-copyright">
-      © {{ currentYear }} Instituto Prisma · Todos os direitos reservados
+
+    <p class="login-brand__copy">
+      &copy; {{ currentYear }} Instituto Prisma da Bahia
     </p>
   </div>
 
-  <!-- Right panel - form -->
+  <!-- Painel direito: formulário ─────────────────────────────────────────── -->
   <div class="login-form-panel">
-    <div class="login-card fade-in">
-      <div class="login-header">
-        <h2>Acesso Administrativo</h2>
-        <p>Entre com suas credenciais para continuar</p>
+    <div class="login-card">
+
+      <div class="login-card__header">
+        <div class="login-card__icon" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0110 0v4"/>
+          </svg>
+        </div>
+        <h2 class="login-card__title">Acesso Administrativo</h2>
+        <p class="login-card__sub">Área restrita — use suas credenciais</p>
       </div>
 
-      <form [formGroup]="form" (ngSubmit)="submit()" class="login-form">
-        <mat-form-field appearance="outline">
-          <mat-label>E-mail</mat-label>
-          <mat-icon matPrefix>email</mat-icon>
-          <input
-            matInput
-            type="email"
-            formControlName="email"
-            autocomplete="email"
-          />
-          <mat-error *ngIf="form.get('email')?.hasError('required')"
-            >E-mail obrigatório</mat-error
-          >
-          <mat-error *ngIf="form.get('email')?.hasError('email')"
-            >E-mail inválido</mat-error
-          >
-        </mat-form-field>
+      <form [formGroup]="form" (ngSubmit)="submit()" class="login-form" novalidate>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Senha</mat-label>
-          <mat-icon matPrefix>lock</mat-icon>
-          <input
-            matInput
-            [type]="hidePassword ? 'password' : 'text'"
-            formControlName="password"
-            autocomplete="current-password"
-          />
-          <button
-            mat-icon-button
-            matSuffix
-            type="button"
-            (click)="hidePassword = !hidePassword"
-          >
-            <mat-icon>{{
-              hidePassword ? "visibility" : "visibility_off"
-            }}</mat-icon>
-          </button>
-          <mat-error *ngIf="form.get('password')?.hasError('required')"
-            >Senha obrigatória</mat-error
-          >
-        </mat-form-field>
+        <div class="lf-field">
+          <label class="lf-field__label" for="email">E-mail</label>
+          <div class="lf-field__wrap" [class.lf-field__wrap--error]="
+              form.get('email')?.invalid && form.get('email')?.touched">
+            <svg class="lf-field__icon" width="16" height="16" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+            <input id="email" class="lf-field__input" type="email"
+              formControlName="email" autocomplete="email"
+              placeholder="seu@email.com" />
+          </div>
+          <p class="lf-field__error"
+            *ngIf="form.get('email')?.hasError('required') && form.get('email')?.touched">
+            E-mail obrigatório
+          </p>
+          <p class="lf-field__error"
+            *ngIf="form.get('email')?.hasError('email') && form.get('email')?.touched">
+            E-mail inválido
+          </p>
+        </div>
 
-        <button
-          mat-raised-button
-          color="primary"
-          type="submit"
-          class="login-btn"
-          [disabled]="loading || form.invalid"
-        >
-          <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
-          <mat-icon *ngIf="!loading">login</mat-icon>
-          <span>{{ loading ? "Entrando..." : "Entrar" }}</span>
+        <div class="lf-field">
+          <label class="lf-field__label" for="password">Senha</label>
+          <div class="lf-field__wrap" [class.lf-field__wrap--error]="
+              form.get('password')?.invalid && form.get('password')?.touched">
+            <svg class="lf-field__icon" width="16" height="16" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0110 0v4"/>
+            </svg>
+            <input id="password" class="lf-field__input"
+              [type]="hidePassword ? 'password' : 'text'"
+              formControlName="password" autocomplete="current-password"
+              placeholder="••••••••" />
+            <button type="button" class="lf-field__toggle"
+              (click)="hidePassword = !hidePassword"
+              [attr.aria-label]="hidePassword ? 'Mostrar senha' : 'Ocultar senha'">
+              <svg *ngIf="hidePassword" width="16" height="16" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              <svg *ngIf="!hidePassword" width="16" height="16" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            </button>
+          </div>
+          <p class="lf-field__error"
+            *ngIf="form.get('password')?.hasError('required') && form.get('password')?.touched">
+            Senha obrigatória
+          </p>
+        </div>
+
+        <button type="submit" class="login-submit"
+          [disabled]="loading || form.invalid" [class.login-submit--loading]="loading">
+          <span class="login-submit__spinner" *ngIf="loading" aria-hidden="true"></span>
+          <svg *ngIf="!loading" width="16" height="16" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/>
+          </svg>
+          <span>{{ loading ? 'Entrando…' : 'Entrar' }}</span>
         </button>
+
       </form>
+
     </div>
   </div>
+
 </div>

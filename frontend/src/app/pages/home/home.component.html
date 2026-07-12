@@ -1,0 +1,433 @@
+<div class="site" [class.site--menu-open]="menuOpen">
+
+  <!-- ═══════════════════ NAVBAR ═══════════════════ -->
+  <header class="nav" [class.nav--solid]="scrolled">
+    <div class="nav__inner">
+      <button class="nav__brand" (click)="scrollTo('hero')">
+        <img src="assets/prisma-logo.png" alt="Instituto Prisma da Bahia" class="nav__logo" />
+        <span class="nav__name"><strong>Instituto Prisma</strong> da Bahia</span>
+      </button>
+
+      <nav class="nav__links" [class.nav__links--open]="menuOpen" role="navigation">
+        <button (click)="scrollTo('sobre')">Quem Somos</button>
+        <button (click)="scrollTo('servicos')">Serviços</button>
+        <button (click)="scrollTo('metodologia')">Metodologia</button>
+        <button (click)="scrollTo('contato')">Contato</button>
+      </nav>
+
+      <button class="nav__hamburger" (click)="menuOpen = !menuOpen"
+        [class.nav__hamburger--open]="menuOpen" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ═══════════════════ HERO ═══════════════════ -->
+  <section class="hero" id="hero">
+    <div class="hero__inner">
+
+      <div class="hero__text">
+        <p class="hero__eyebrow">Instituto de Pesquisa · Bahia</p>
+        <h1 class="hero__title">
+          Transformando<br>opiniões em<br><span class="hero__accent">decisões.</span>
+        </h1>
+        <p class="hero__sub">
+          Pesquisa científica de opinião pública para municípios, empresas e organizações.
+          Dados confiáveis para apoiar decisões estratégicas com rigor técnico e ética.
+        </p>
+        <a [href]="whatsappUrl" target="_blank" rel="noopener noreferrer" class="cta-btn cta-btn--hero">
+          Solicitar uma proposta
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </div>
+
+      <div class="hero__visual" aria-hidden="true">
+        <div class="hcard hcard--a">
+          <span class="hcard__label">Entrevistados</span>
+          <span class="hcard__value">12.400+</span>
+          <div class="hcard__bars">
+            <div class="hcard__bar" style="height:60%"></div>
+            <div class="hcard__bar" style="height:80%"></div>
+            <div class="hcard__bar" style="height:45%"></div>
+            <div class="hcard__bar" style="height:95%"></div>
+            <div class="hcard__bar" style="height:70%"></div>
+          </div>
+        </div>
+        <div class="hcard hcard--b">
+          <span class="hcard__label">Margem de erro</span>
+          <span class="hcard__value">±2,8%</span>
+          <span class="hcard__meta">IC 95%</span>
+        </div>
+        <div class="hcard hcard--c">
+          <span class="hcard__label">Municípios atendidos</span>
+          <span class="hcard__value">48</span>
+          <span class="hcard__meta">Bahia · Brasil</span>
+        </div>
+        <div class="hcard hcard--d">
+          <div class="hcard__dot"></div>
+          <span class="hcard__label">Pesquisas realizadas</span>
+          <span class="hcard__value">200+</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero__scroll-hint" aria-hidden="true">
+      <span></span>
+    </div>
+  </section>
+
+  <!-- ═══════════════════ STATS BAR ═══════════════════ -->
+  <section class="statsbar">
+    <div class="statsbar__inner">
+      <div class="statsbar__item reveal" *ngFor="let s of stats">
+        <span class="statsbar__value">{{ s.value }}</span>
+        <span class="statsbar__label">{{ s.label }}</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════ QUEM SOMOS ═══════════════════ -->
+  <section class="section sobre" id="sobre">
+    <div class="section__inner sobre__inner">
+
+      <div class="sobre__text reveal">
+        <p class="section__eyebrow">Quem Somos</p>
+        <h2 class="section__title">
+          Ciência e rigor<br>a serviço da<br>gestão pública.
+        </h2>
+        <p class="sobre__para">
+          O Instituto Prisma da Bahia é uma organização especializada em pesquisa de
+          opinião pública e inteligência de dados. Atuamos com metodologia científica,
+          fornecendo informações confiáveis que embasam decisões estratégicas para
+          prefeituras, empresas e organizações em todo o estado.
+        </p>
+        <p class="sobre__para">
+          Nossa equipe é composta por pesquisadores, estatísticos e especialistas
+          em ciências sociais comprometidos com a qualidade, a ética e o sigilo
+          absoluto das informações coletadas. Cada pesquisa segue protocolos técnicos
+          rigorosos, em conformidade com a LGPD e os melhores padrões internacionais.
+        </p>
+        <a [href]="whatsappUrl" target="_blank" rel="noopener noreferrer" class="cta-btn cta-btn--outline">
+          Conheça nossa metodologia
+        </a>
+      </div>
+
+      <div class="sobre__pillars reveal">
+        <div class="pillar" *ngFor="let p of [
+          {title:'Metodologia Científica',   desc:'Amostragem estatística, coleta validada e análise rigorosa em cada projeto.'},
+          {title:'Ética e Confidencialidade',desc:'Sigilo absoluto dos dados coletados e conformidade total com a LGPD.'},
+          {title:'Decisões Baseadas em Dados',desc:'Transformamos percepções da população em inteligência acionável para gestores.'},
+          {title:'Equipe Especializada',     desc:'Pesquisadores, estatísticos e analistas com formação acadêmica e experiência de campo.'}
+        ]">
+          <div class="pillar__accent"></div>
+          <h3 class="pillar__title">{{ p.title }}</h3>
+          <p class="pillar__desc">{{ p.desc }}</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════ SERVIÇOS ═══════════════════ -->
+  <section class="section servicos" id="servicos">
+    <div class="section__inner">
+
+      <div class="section__header reveal">
+        <p class="section__eyebrow">Serviços</p>
+        <h2 class="section__title">Áreas de atuação</h2>
+        <p class="section__sub">
+          Soluções completas em pesquisa para diferentes necessidades e setores.
+        </p>
+      </div>
+
+      <div class="services-grid">
+        <div class="scard reveal" *ngFor="let s of services; let i = index"
+          [style.animation-delay]="(i * 60) + 'ms'">
+          <div class="scard__icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <ng-container [ngSwitch]="s.icon">
+                <ng-container *ngSwitchCase="'poll'">
+                  <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
+                  <line x1="6" y1="20" x2="6" y2="14"/>
+                </ng-container>
+                <ng-container *ngSwitchCase="'how_to_vote'">
+                  <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                </ng-container>
+                <ng-container *ngSwitchCase="'account_balance'">
+                  <line x1="3" y1="22" x2="21" y2="22"/>
+                  <line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/>
+                  <line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/>
+                  <polygon points="12 2 20 7 4 7"/>
+                </ng-container>
+                <ng-container *ngSwitchCase="'corporate_fare'">
+                  <path d="M3 21h18M5 21V7l8-4 8 4v14"/>
+                  <path d="M9 21v-4h6v4"/>
+                </ng-container>
+                <ng-container *ngSwitchCase="'storefront'">
+                  <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+                  <line x1="3" y1="6" x2="21" y2="6"/>
+                  <path d="M16 10a4 4 0 01-8 0"/>
+                </ng-container>
+                <ng-container *ngSwitchDefault>
+                  <line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/>
+                  <line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/>
+                  <line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/>
+                  <line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/>
+                  <line x1="17" y1="16" x2="23" y2="16"/>
+                </ng-container>
+              </ng-container>
+            </svg>
+          </div>
+          <h3 class="scard__title">{{ s.title }}</h3>
+          <p class="scard__desc">{{ s.desc }}</p>
+          <div class="scard__arrow" aria-hidden="true">→</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════ COMO FUNCIONA ═══════════════════ -->
+  <section class="section processo">
+    <div class="section__inner">
+
+      <div class="section__header section__header--light reveal">
+        <p class="section__eyebrow section__eyebrow--light">Como funciona</p>
+        <h2 class="section__title section__title--light">Do planejamento ao relatório final</h2>
+      </div>
+
+      <div class="steps-grid">
+        <div class="step reveal" *ngFor="let s of steps; let i = index"
+          [style.animation-delay]="(i * 80) + 'ms'">
+          <div class="step__num">{{ s.num }}</div>
+          <h3 class="step__title">{{ s.title }}</h3>
+          <p class="step__desc">{{ s.desc }}</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════ DIFERENCIAIS ═══════════════════ -->
+  <section class="section diferenciais">
+    <div class="section__inner">
+
+      <div class="section__header reveal">
+        <p class="section__eyebrow">Por que nos escolher</p>
+        <h2 class="section__title">Nossos diferenciais</h2>
+      </div>
+
+      <ul class="diff-grid">
+        <li class="diff-item reveal" *ngFor="let d of differentials; let i = index"
+          [style.animation-delay]="(i * 50) + 'ms'">
+          <span class="diff-item__check" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </span>
+          {{ d }}
+        </li>
+      </ul>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════ QUEM ATENDEMOS ═══════════════════ -->
+  <section class="section atendemos">
+    <div class="section__inner">
+
+      <div class="section__header reveal">
+        <p class="section__eyebrow">Clientes</p>
+        <h2 class="section__title">Quem atendemos</h2>
+      </div>
+
+      <div class="clients-grid">
+        <div class="client reveal" *ngFor="let c of clients; let i = index"
+          [style.animation-delay]="(i * 60) + 'ms'">
+          <div class="client__icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <ng-container [ngSwitch]="c.icon">
+                <ng-container *ngSwitchCase="'account_balance'">
+                  <line x1="3" y1="22" x2="21" y2="22"/>
+                  <line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/>
+                  <line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/>
+                  <polygon points="12 2 20 7 4 7"/>
+                </ng-container>
+                <ng-container *ngSwitchCase="'business'">
+                  <rect x="2" y="7" width="20" height="14" rx="1"/>
+                  <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/>
+                </ng-container>
+                <ng-container *ngSwitchCase="'apartment'">
+                  <path d="M6 22V4a2 2 0 012-2h8a2 2 0 012 2v18z"/>
+                  <path d="M6 12H4a2 2 0 00-2 2v6a2 2 0 002 2h2"/>
+                  <path d="M18 9h2a2 2 0 012 2v9a2 2 0 01-2 2h-2"/>
+                  <line x1="10" y1="6" x2="10" y2="6"/><line x1="14" y1="6" x2="14" y2="6"/>
+                  <line x1="10" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="14" y2="10"/>
+                  <line x1="10" y1="14" x2="10" y2="14"/><line x1="14" y1="14" x2="14" y2="14"/>
+                </ng-container>
+                <ng-container *ngSwitchCase="'hub'">
+                  <circle cx="12" cy="12" r="3"/>
+                  <path d="M12 3v6M12 15v6M3 12h6M15 12h6"/>
+                </ng-container>
+                <ng-container *ngSwitchCase="'groups'">
+                  <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+                </ng-container>
+                <ng-container *ngSwitchDefault>
+                  <path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/>
+                  <line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/>
+                  <line x1="14" y1="1" x2="14" y2="4"/>
+                </ng-container>
+              </ng-container>
+            </svg>
+          </div>
+          <span class="client__label">{{ c.label }}</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════ METODOLOGIA ═══════════════════ -->
+  <section class="section metodologia" id="metodologia">
+    <div class="section__inner metodologia__inner">
+
+      <div class="metodologia__text reveal">
+        <p class="section__eyebrow section__eyebrow--light">Metodologia</p>
+        <h2 class="section__title section__title--light">Rigor científico em cada etapa</h2>
+        <p class="metodologia__para">
+          Toda pesquisa do Instituto Prisma segue critérios técnicos rigorosos de amostragem
+          probabilística, coleta controlada, validação automática e análise estatística,
+          garantindo resultados confiáveis para apoiar decisões estratégicas.
+        </p>
+        <p class="metodologia__para">
+          Utilizamos questionários digitais georreferenciados com validação em tempo real,
+          eliminando inconsistências antes da análise. Nossos relatórios são claros, objetivos
+          e entregues com suporte técnico dedicado para a correta interpretação dos dados.
+        </p>
+        <div class="metodologia__badges">
+          <span class="mbadge">LGPD Compliant</span>
+          <span class="mbadge">Amostras Probabilísticas</span>
+          <span class="mbadge">IC 95%</span>
+          <span class="mbadge">Coleta Georreferenciada</span>
+        </div>
+      </div>
+
+      <div class="metodologia__numbers reveal">
+        <div class="mnum" *ngFor="let m of [
+          {val:'95%',  lab:'Nível de confiança padrão'},
+          {val:'±2,8%',lab:'Margem de erro média'},
+          {val:'100%', lab:'Validação automática dos dados'},
+          {val:'48h',  lab:'Tempo médio de entrega do relatório'}
+        ]">
+          <span class="mnum__val">{{ m.val }}</span>
+          <span class="mnum__lab">{{ m.lab }}</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════ CTA FINAL ═══════════════════ -->
+  <section class="section cta" id="contato">
+    <div class="section__inner cta__inner">
+      <div class="cta__content reveal">
+        <p class="section__eyebrow section__eyebrow--light">Vamos conversar</p>
+        <h2 class="cta__title">Precisa de dados<br>confiáveis?</h2>
+        <p class="cta__sub">
+          Fale com a equipe do Instituto Prisma da Bahia e receba uma proposta
+          personalizada para o seu projeto.
+        </p>
+        <div class="cta__actions">
+          <a [href]="whatsappUrl" target="_blank" rel="noopener noreferrer"
+            class="cta-btn cta-btn--white">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+            </svg>
+            Solicitar uma proposta
+          </a>
+          <a href="mailto:contato@institutoprisma.com.br" class="cta-btn cta-btn--ghost">
+            contato@institutoprisma.com.br
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════ FOOTER ═══════════════════ -->
+  <footer class="footer">
+    <div class="footer__inner">
+
+      <div class="footer__brand">
+        <img src="assets/prisma-logo.png" alt="Instituto Prisma da Bahia" class="footer__logo" />
+        <p class="footer__name"><strong>Instituto Prisma</strong><br>da Bahia</p>
+        <p class="footer__tagline">Transformando opiniões em conhecimento.</p>
+      </div>
+
+      <div class="footer__col">
+        <h4 class="footer__heading">Serviços</h4>
+        <ul class="footer__list">
+          <li>Pesquisa de Opinião Pública</li>
+          <li>Pesquisa Eleitoral</li>
+          <li>Avaliação da Gestão Pública</li>
+          <li>Pesquisa Institucional</li>
+          <li>Pesquisa de Mercado</li>
+        </ul>
+      </div>
+
+      <div class="footer__col">
+        <h4 class="footer__heading">Contato</h4>
+        <ul class="footer__list footer__list--contact">
+          <li>
+            <a [href]="whatsappUrl" target="_blank" rel="noopener noreferrer">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+              </svg>
+              (71) 99999-9999
+            </a>
+          </li>
+          <li>
+            <a href="mailto:contato@institutoprisma.com.br">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+              </svg>
+              contato@institutoprisma.com.br
+            </a>
+          </li>
+          <li>
+            <a href="https://instagram.com/institutoprisma" target="_blank" rel="noopener noreferrer">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                <circle cx="12" cy="12" r="4"/>
+                <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/>
+              </svg>
+              @institutoprisma
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="footer__bottom">
+      <div class="footer__bottom-inner">
+        <span>&copy; {{ currentYear }} Instituto Prisma da Bahia · Todos os direitos reservados</span>
+        <div class="footer__legal">
+          <a href="#">Política de Privacidade</a>
+          <a href="#">Termos de Uso</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</div>
