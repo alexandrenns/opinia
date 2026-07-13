@@ -4,6 +4,7 @@
   --navy: #0a2855;
   --cobalt: #1a5cb8;
   --crimson: #c0392b;
+  --red: #ff0000;
   --ice: #f0f4fb;
   --silver: #8899aa;
   --border: #dde5f0;
@@ -670,7 +671,7 @@ img {
   &__accent {
     width: 3px;
     height: 28px;
-    background: var(--crimson);
+    background: var(--red);
     border-radius: 2px;
     margin-bottom: 14px;
   }
