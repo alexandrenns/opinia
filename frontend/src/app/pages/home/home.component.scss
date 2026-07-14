@@ -93,11 +93,11 @@ img {
   }
 
   &--hero {
-    background: var(--crimson);
+    background: var(--red);
     color: var(--white);
     box-shadow: 0 4px 20px rgba(192, 57, 43, 0.35);
     &:hover {
-      background: #0f55c4;
+      background: #e04b4b;
       box-shadow: 0 6px 24px rgba(192, 57, 43, 0.45);
     }
   }
