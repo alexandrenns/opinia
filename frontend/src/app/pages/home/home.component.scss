@@ -1,10 +1,10 @@
 // ── TOKENS ───────────────────────────────────────────────────────────────────
 :host {
-  --ink: #0a1628;
+  --ink: #0f55c4;
   --navy: #0a2855;
   --cobalt: #1a5cb8;
   --crimson: #c0392b;
-  --red: #ff0000;
+  --red: #df0e10;
   --ice: #f0f4fb;
   --silver: #8899aa;
   --border: #dde5f0;
@@ -331,7 +331,7 @@ img {
       left: 0;
       right: 0;
       height: 3px;
-      background: var(--crimson);
+      background: var(--red);
       opacity: 0.4;
       border-radius: 2px;
     }
