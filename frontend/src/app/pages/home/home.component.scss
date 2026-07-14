@@ -317,12 +317,12 @@ img {
     font-weight: 800;
     line-height: 1.08;
     letter-spacing: -0.03em;
-    color: var(--white);
+    color: var(--cobalt);
     margin-bottom: 24px;
   }
 
   &__accent {
-    color: var(--cobalt);
+    color: var(--red);
     position: relative;
     &::after {
       content: "";
@@ -340,7 +340,7 @@ img {
   &__sub {
     font-size: clamp(0.9rem, 1.2vw, 1.05rem);
     line-height: 1.7;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--cobalt);
     margin-bottom: 36px;
     max-width: 440px;
   }
@@ -348,6 +348,7 @@ img {
   &__visual {
     position: relative;
     height: 380px;
+    color: var(--cobalt);
     display: flex;
     align-items: center;
     justify-content: center;
