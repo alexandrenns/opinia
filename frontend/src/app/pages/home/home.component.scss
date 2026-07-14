@@ -1,6 +1,6 @@
 // ── TOKENS ───────────────────────────────────────────────────────────────────
 :host {
-  --ink: #0f55c4;
+  --ink: #0a1628;
   --navy: #0a2855;
   --cobalt: #1a5cb8;
   --crimson: #c0392b;
@@ -266,7 +266,7 @@ img {
 // ── HERO ──────────────────────────────────────────────────────────────────────
 .hero {
   min-height: 100vh;
-  background: var(--ink);
+  background: var(--white);
   background-image:
     radial-gradient(
       ellipse 80% 60% at 70% 40%,
