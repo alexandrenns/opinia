@@ -420,7 +420,7 @@ img {
     font-weight: 500;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.45);
+    color: var(--cobalt);
     margin-bottom: 6px;
   }
   &__value {
@@ -428,7 +428,7 @@ img {
     font-size: 1.9rem;
     font-weight: 800;
     letter-spacing: -0.03em;
-    color: var(--white);
+    color: var(--cobalt);
     line-height: 1;
   }
   &__meta {
@@ -453,7 +453,7 @@ img {
   &__dot {
     width: 8px;
     height: 8px;
-    background: var(--crimson);
+    background: var(--cobalt);
     border-radius: 50%;
     margin-bottom: 8px;
   }
