@@ -162,7 +162,7 @@ img {
     align-items: center;
     gap: 12px;
     flex-shrink: 0;
-    color: var(--cobalt);
+    color: var(--white);
     transition: opacity 0.2s;
     &:hover {
       opacity: 0.85;
@@ -178,7 +178,7 @@ img {
   &__name {
     font-size: 0.85rem;
     line-height: 1.3;
-    color: var(--cobalt);
+    color: var(--white);
     strong {
       display: block;
       font-weight: 700;
@@ -193,7 +193,7 @@ img {
     margin-left: auto;
 
     button {
-      color: rgba(81, 83, 211, 0.75);
+      color: rgba(236, 236, 238, 0.75);
       font-size: 0.875rem;
       font-weight: 500;
       padding: 8px 14px;
@@ -266,7 +266,7 @@ img {
 // ── HERO ──────────────────────────────────────────────────────────────────────
 .hero {
   min-height: 100vh;
-  background: var(--white);
+  background: var(--cobalt);
   background-image:
     radial-gradient(
       ellipse 80% 60% at 70% 40%,
@@ -308,7 +308,7 @@ img {
     font-weight: 600;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--cobalt);
+    color: var(--white);
     margin-bottom: 20px;
   }
 
@@ -317,7 +317,7 @@ img {
     font-weight: 800;
     line-height: 1.08;
     letter-spacing: -0.03em;
-    color: var(--cobalt);
+    color: var(--white);
     margin-bottom: 24px;
   }
 
@@ -340,7 +340,7 @@ img {
   &__sub {
     font-size: clamp(0.9rem, 1.2vw, 1.05rem);
     line-height: 1.7;
-    color: var(--cobalt);
+    color: var(--white);
     margin-bottom: 36px;
     max-width: 440px;
   }
@@ -348,7 +348,7 @@ img {
   &__visual {
     position: relative;
     height: 380px;
-    color: var(--cobalt);
+    color: var(--white);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -420,7 +420,7 @@ img {
     font-weight: 500;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--cobalt);
+    color: var(--white);
     margin-bottom: 6px;
   }
   &__value {
@@ -428,7 +428,7 @@ img {
     font-size: 1.9rem;
     font-weight: 800;
     letter-spacing: -0.03em;
-    color: var(--cobalt);
+    color: var(--white);
     line-height: 1;
   }
   &__meta {
@@ -446,14 +446,14 @@ img {
   }
   &__bar {
     width: 8px;
-    background: var(--cobalt);
+    background: var(--white);
     border-radius: 2px 2px 0 0;
     opacity: 0.7;
   }
   &__dot {
     width: 8px;
     height: 8px;
-    background: var(--cobalt);
+    background: var(--white);
     border-radius: 50%;
     margin-bottom: 8px;
   }
