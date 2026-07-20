@@ -193,7 +193,7 @@ img {
     margin-left: auto;
 
     button {
-      color: rgba(236, 236, 238, 0.75);
+      color: rgba(255, 255, 255, 0.952);
       font-size: 0.875rem;
       font-weight: 500;
       padding: 8px 14px;
@@ -266,7 +266,7 @@ img {
 // ── HERO ──────────────────────────────────────────────────────────────────────
 .hero {
   min-height: 100vh;
-  background: var(--cobalt);
+  background: var(--ink);
   background-image:
     radial-gradient(
       ellipse 80% 60% at 70% 40%,
