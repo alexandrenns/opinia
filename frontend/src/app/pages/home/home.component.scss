@@ -322,7 +322,7 @@ img {
   }
 
   &__accent {
-    color: var(--red);
+    color: var(--cobalt);
     position: relative;
     &::after {
       content: "";
@@ -331,7 +331,7 @@ img {
       left: 0;
       right: 0;
       height: 3px;
-      background: var(--red);
+      background: var(--cobalt);
       opacity: 0.4;
       border-radius: 2px;
     }
@@ -672,7 +672,7 @@ img {
   &__accent {
     width: 3px;
     height: 28px;
-    background: var(--red);
+    background: var(--cobalt);
     border-radius: 2px;
     margin-bottom: 14px;
   }
